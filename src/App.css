@@ -51,7 +51,45 @@
   justify-content: center;
 }
 
+.app--loading {
+  align-items: center;
+}
+
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loader__spinner {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 3px solid color-mix(in srgb, var(--wc-red) 28%, transparent);
+  border-top-color: var(--wc-red);
+  border-radius: 50%;
+  animation: loader-spin 0.7s linear infinite;
+}
+
+.loader__label {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--wc-red);
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 900px) {
+  .app-shell {
+    padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  }
+
   .app-shell__play {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -69,6 +107,15 @@
 
   .live-standings--mobile {
     display: block;
+  }
+
+  .app-shell > .app-shell__chrome > .tabs {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    z-index: 100;
+    margin: 0;
   }
 }
 
@@ -235,6 +282,32 @@
   background: #fff;
   color: var(--wc-blue);
   box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 900px) {
+  .app-shell > .app-shell__chrome > .tabs {
+    background: #fff;
+    border: 2px solid color-mix(in srgb, var(--wc-blue) 14%, var(--wc-light-gray));
+    backdrop-filter: none;
+    box-shadow:
+      0 8px 28px -6px rgb(15 20 50 / 0.35),
+      0 0 0 1px rgb(255 255 255 / 0.8) inset;
+  }
+
+  .app-shell > .app-shell__chrome > .tabs .tab:not(.tab--active) {
+    color: var(--wc-blue);
+    background: var(--surface-elevated);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.5rem 0.2rem;
+  }
+
+  .app-shell > .app-shell__chrome > .tabs .tab--active {
+    background: var(--wc-blue);
+    color: #fff;
+    box-shadow: none;
+  }
 }
 
 .match-deck {
@@ -791,8 +864,13 @@
 
 .nav-sidebar__mobile {
   display: block;
-  padding: 0.5rem;
+  padding: 0.5rem 0.65rem 0.65rem;
   margin-bottom: 0.75rem;
+}
+
+.nav-sidebar__heading--mobile {
+  margin: 0 0 0.4rem;
+  padding: 0 0.1rem;
 }
 
 .app-shell__main .nav-sidebar__mobile {

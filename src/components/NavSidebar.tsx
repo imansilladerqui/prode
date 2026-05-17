@@ -84,6 +84,7 @@ export const NavSidebar = ({
         role="navigation"
         aria-label={t('nav.jumpAria')}
       >
+        <p className="nav-sidebar__heading nav-sidebar__heading--mobile">{t('nav.phases')}</p>
         <div className="nav-pills">
           {GROUP_LETTERS.map((letter) => {
             const key = `Grupo ${letter}`

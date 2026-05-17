@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Loader } from './components/Loader'
 import { KnockoutAdvanceDialog } from './components/KnockoutAdvanceDialog'
 import { MatchesScreen } from './components/MatchesScreen'
 import { NameScreen } from './components/NameScreen'
@@ -254,8 +255,8 @@ const AppContent = () => {
 
   if (screen === 'loading') {
     return (
-      <div className="app">
-        <p className="muted">{t('app.loading')}</p>
+      <div className="app app--loading">
+        <Loader label={t('app.loading')} />
       </div>
     )
   }

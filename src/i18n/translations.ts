@@ -41,6 +41,7 @@ const es = {
 
   'nav.groups': 'Grupos',
   'nav.knockout': 'Eliminatorias',
+  'nav.phases': 'Fases',
   'nav.group': 'Grupo {letter}',
   'nav.aria': 'Grupos y fases',
   'nav.jumpAria': 'Saltar a grupo o fase',
@@ -148,6 +149,7 @@ const en: Record<keyof typeof es, string> = {
 
   'nav.groups': 'Groups',
   'nav.knockout': 'Knockout',
+  'nav.phases': 'Phases',
   'nav.group': 'Group {letter}',
   'nav.aria': 'Groups and stages',
   'nav.jumpAria': 'Jump to group or stage',
