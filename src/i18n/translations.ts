@@ -106,6 +106,8 @@ const es = {
   'standings.team': 'Equipo',
   'standings.played': 'PJ',
   'standings.points': 'PTS',
+  'standings.goalsFor': 'GF',
+  'standings.goalsAgainst': 'GC',
   'standings.goalDiff': 'DG',
 
   'qualified.title': 'Tus clasificados a eliminatorias',
@@ -237,6 +239,8 @@ const en: Record<keyof typeof es, string> = {
   'standings.team': 'Team',
   'standings.played': 'P',
   'standings.points': 'Pts',
+  'standings.goalsFor': 'GF',
+  'standings.goalsAgainst': 'GA',
   'standings.goalDiff': 'GD',
 
   'qualified.title': 'Your knockout qualifiers',

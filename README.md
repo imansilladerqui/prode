@@ -93,7 +93,9 @@ Puntos por partido (como en la fase de grupos FIFA):
 | Empate | 1 |
 | Derrota | 0 |
 
-**Desempate** en la tabla: más puntos → mejor diferencia de goles → más goles a favor → orden alfabético del equipo.
+**Desempate** en la tabla (según [Reglamento FIFA Mundial 2026](https://digitalhub.fifa.com/m/636f5c9c6f29771f/original/FWC2026_regulations_EN.pdf), artículo 13): más puntos → enfrentamientos directos entre empatados (puntos, diferencia y goles a favor en esos partidos, con re-aplicación si siguen empatados) → diferencia de goles en todo el grupo → goles a favor en todo el grupo → ranking FIFA/Coca-Cola (snapshot en `src/data/wc2026-fifa-ranking.ts`). El **fair play** (tarjetas) no se simula porque no hay datos de tarjetas en el prode.
+
+Los **mejores 8 terceros** usan puntos, diferencia y goles en todos los partidos del grupo, luego ranking FIFA (sin mini-liga entre terceros).
 
 ### Clasificados
 

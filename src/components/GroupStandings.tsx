@@ -31,6 +31,8 @@ export const GroupStandings = ({ group, standings, topThirds, done, total }: Pro
             <th>{t('standings.team')}</th>
             <th>{t('standings.played')}</th>
             <th>{t('standings.points')}</th>
+            <th>{t('standings.goalsFor')}</th>
+            <th>{t('standings.goalsAgainst')}</th>
             <th>{t('standings.goalDiff')}</th>
           </tr>
         </thead>
@@ -54,6 +56,8 @@ export const GroupStandings = ({ group, standings, topThirds, done, total }: Pro
                 </td>
                 <td>{row.played}</td>
                 <td>{row.points}</td>
+                <td>{row.goalsFor}</td>
+                <td>{row.goalsAgainst}</td>
                 <td>{row.goalDiff > 0 ? `+${row.goalDiff}` : row.goalDiff}</td>
               </tr>
             )

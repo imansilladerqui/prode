@@ -1,6 +1,7 @@
 import type { GroupLetter } from '../data/wc2026-groups'
 import { GROUP_LETTERS, WC2026_GROUPS } from '../data/wc2026-groups'
 import type { Match, Prediction } from '../types/database'
+import { type GroupMatchResult, rankGroupStandings } from './standingsRank'
 
 export type TeamStanding = {
   slot: string
@@ -28,11 +29,25 @@ const emptyStanding = (group: GroupLetter, index: number): TeamStanding => ({
   points: 0,
 })
 
-const compareStandings = (a: TeamStanding, b: TeamStanding): number => {
-  if (b.points !== a.points) return b.points - a.points
-  if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff
-  if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor
-  return a.team.localeCompare(b.team)
+const collectGroupMatchResults = (
+  group: GroupLetter,
+  matches: Match[],
+  predictions: Map<string, Prediction>,
+): GroupMatchResult[] => {
+  const groupMatches = matches.filter((m) => m.stage === 'group' && m.group_name === `Grupo ${group}`)
+  const results: GroupMatchResult[] = []
+
+  for (const m of groupMatches) {
+    const pred = predictions.get(m.id)
+    if (!pred) continue
+    results.push({
+      homeSlot: m.home_slot,
+      awaySlot: m.away_slot,
+      homeGoals: pred.score_a,
+      awayGoals: pred.score_b,
+    })
+  }
+  return results
 }
 
 export const computeGroupStandings = (
@@ -85,9 +100,13 @@ export const computeGroupStandings = (
     }
   }
 
-  return [...table.values()]
-    .map((t) => ({ ...t, goalDiff: t.goalsFor - t.goalsAgainst }))
-    .sort(compareStandings)
+  const standings = [...table.values()].map((t) => ({
+    ...t,
+    goalDiff: t.goalsFor - t.goalsAgainst,
+  }))
+
+  const matchResults = collectGroupMatchResults(group, matches, predictions)
+  return rankGroupStandings(standings, matchResults)
 }
 
 export const computeAllGroupStandings = (

@@ -751,8 +751,14 @@
 .standings-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--text-on-surface);
+}
+
+@media (min-width: 400px) {
+  .standings-table {
+    font-size: 0.78rem;
+  }
 }
 
 .standings-table th,

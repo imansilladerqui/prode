@@ -1,6 +1,7 @@
 import type { GroupLetter } from '../data/wc2026-groups'
 import { GROUP_LETTERS } from '../data/wc2026-groups'
 import type { TeamStanding } from './standings'
+import { compareThirdPlaceFifa } from './standingsRank'
 
 export type ThirdPlaceEntry = {
   group: GroupLetter
@@ -11,6 +12,7 @@ export type ThirdPlaceEntry = {
   goalsFor: number
 }
 
+/** Article 13: eight best third-placed teams (all group matches; no head-to-head). */
 export const rankThirdPlaces = (
   standingsByGroup: Record<GroupLetter, TeamStanding[]>,
 ): ThirdPlaceEntry[] => {
@@ -28,12 +30,7 @@ export const rankThirdPlaces = (
       goalsFor: third.goalsFor,
     })
   }
-  return thirds.sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points
-    if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff
-    if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor
-    return a.group.localeCompare(b.group)
-  })
+  return thirds.sort(compareThirdPlaceFifa)
 }
 
 export const topEightThirdPlaces = (ranked: ThirdPlaceEntry[]): ThirdPlaceEntry[] => ranked.slice(0, 8)
