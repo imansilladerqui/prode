@@ -1,0 +1,128 @@
+:root {
+  /* FIFA World Cup 2026 — primary launch palette */
+  --wc-green: #3cac3b;
+  --wc-blue: #2a398d;
+  --wc-red: #e61d25;
+  --wc-light-gray: #d1d4d1;
+  --wc-dark-gray: #474a4a;
+
+  --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Barlow Condensed', 'DM Sans', system-ui, sans-serif;
+
+  --bg: var(--wc-blue);
+  --surface: #ffffff;
+  --surface-elevated: #f5f6fa;
+  --surface-glass: rgb(255 255 255 / 0.14);
+  --text: #ffffff;
+  --text-on-surface: var(--wc-dark-gray);
+  --text-muted: color-mix(in srgb, var(--wc-light-gray) 88%, white);
+  --text-muted-on-surface: color-mix(in srgb, var(--wc-dark-gray) 72%, white);
+  --border: color-mix(in srgb, var(--wc-light-gray) 55%, var(--wc-blue));
+  --border-on-surface: color-mix(in srgb, var(--wc-light-gray) 80%, white);
+  --accent: var(--wc-green);
+  --accent-hover: #329532;
+  --accent-soft: color-mix(in srgb, var(--wc-green) 22%, transparent);
+  --danger: var(--wc-red);
+  --qualify-direct: color-mix(in srgb, var(--wc-green) 18%, white);
+  --qualify-third: color-mix(in srgb, var(--wc-red) 14%, white);
+  --shadow: 0 16px 40px -12px rgb(26 35 80 / 0.45);
+  --shadow-card: 0 12px 32px -8px rgb(15 20 50 / 0.35);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  font-family: var(--font-body);
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Curved color blocks — launch creative pattern */
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--wc-blue);
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -2;
+  pointer-events: none;
+}
+
+body::before {
+  top: 18%;
+  left: -18%;
+  width: 95vmin;
+  height: 85vmin;
+  background: var(--wc-red);
+  border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
+  transform: rotate(-18deg);
+}
+
+body::after {
+  right: -22%;
+  bottom: -8%;
+  width: 88vmin;
+  height: 78vmin;
+  background: linear-gradient(145deg, var(--wc-green) 0%, #5ed43a 100%);
+  border-radius: 58% 42% 48% 52% / 52% 58% 42% 48%;
+  transform: rotate(14deg);
+}
+
+#root {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  isolation: isolate;
+}
+
+#root::before {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  top: -12%;
+  right: -8%;
+  width: 52vmin;
+  height: 52vmin;
+  background: color-mix(in srgb, var(--wc-green) 75%, #b8f06a);
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
+
+input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

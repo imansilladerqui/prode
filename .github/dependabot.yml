@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      react:
+        patterns:
+          - react
+          - react-dom
+          - '@types/react*'
+      vite:
+        patterns:
+          - vite
+          - '@vitejs/*'
+      supabase:
+        patterns:
+          - '@supabase/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
