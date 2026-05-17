@@ -17,6 +17,13 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Mismo environment que deploy: así aplican secrets/variables de
+    # Settings → Environments → github-pages (no solo las del repo).
+    environment: github-pages
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY }}
+      VITE_ADMIN_USER_ID: ${{ secrets.VITE_ADMIN_USER_ID || vars.VITE_ADMIN_USER_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -37,12 +44,21 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Comprobar variables de Supabase
+        run: |
+          missing=""
+          [ -z "$VITE_SUPABASE_URL" ] && missing="$missing VITE_SUPABASE_URL"
+          [ -z "$VITE_SUPABASE_ANON_KEY" ] && missing="$missing VITE_SUPABASE_ANON_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Faltan en GitHub Actions (secrets o variables):$missing"
+            echo "Configuralas en Settings → Secrets and variables → Actions:"
+            echo "  - Repository secrets / Variables, o"
+            echo "  - Environment «github-pages» (mismo nombre exacto)"
+            exit 1
+          fi
+
       - name: Build
         run: pnpm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_ADMIN_USER_ID: ${{ secrets.VITE_ADMIN_USER_ID }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

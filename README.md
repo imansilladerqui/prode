@@ -1,190 +1,135 @@
 # Prode Mundial 2026
 
-Pronósticos del **Mundial FIFA 2026** (USA · México · Canadá): 104 partidos, tablas simuladas, clasificados y ranking entre amigos.
-
-**Stack:** React 19 + Vite + TypeScript · Supabase (PostgreSQL) · GitHub Pages
+Pronosticá el **Mundial FIFA 2026** (USA · México · Canadá) con amigos: cargá resultados partido a partido, mirá cómo quedarían las tablas con tus pronósticos y competí en el ranking cuando haya resultados oficiales.
 
 ---
 
-## Cómo funciona
+## Detrás de escena (sin spoilear todo)
 
-1. Cada jugador elige un nombre y guarda pronósticos partido a partido.
-2. La app calcula **tablas de grupos**, **32 clasificados** y **cruces de eliminatorias** según *tus* resultados (no los oficiales).
-3. Un administrador carga los **resultados reales** en la pestaña Admin.
-4. El **ranking** suma puntos comparando cada pronóstico con el resultado oficial.
+La app es una **web estática** hecha con **React** y **Vite**: corre en el navegador, carga rápido y no hace falta instalar nada.
+
+Los pronósticos y el ranking viven en **Supabase** (base en la nube), así todos ven los mismos partidos y puntajes al instante. El sitio se publica en **GitHub Pages**; cada deploy nuevo sale cuando actualizamos `main`.
+
+Cómo calculamos cruces, desempates y el ranking exacto… eso se queda en el código (y en un par de decisiones nuestras). Si te copás el repo, vas a ver la estructura; si solo jugás, alcanza con saber que **simulación** y **puntos oficiales** no son la misma cosa a propósito.
+
+---
+
+## Cómo se usa
+
+1. Entrás, elegís un nombre y guardás pronósticos.
+2. En **Tablas** y **Clasificados** ves cómo quedaría el torneo **si se cumplieran tus resultados** (no los oficiales).
+3. Quien administra el prode carga los **resultados reales** en **Admin**.
+4. En **Ranking** se suman los puntos comparando tus pronósticos con esos resultados.
 
 ```mermaid
 flowchart LR
   subgraph users [Jugadores]
-    P[predictions]
+    P[Pronósticos]
   end
   subgraph admin [Admin]
-    R[match_results]
+    R[Resultados reales]
   end
   subgraph db [Supabase]
-    V[leaderboard view]
+    V[Ranking]
   end
   P --> V
   R --> V
   V --> UI[Tab Ranking]
 ```
 
+| Pestaña | Para qué sirve |
+|---------|----------------|
+| **Jugar** | Cargar y editar pronósticos |
+| **Tablas** | Posiciones de grupos según tus pronósticos |
+| **Clasificados** | Los 32 que pasarían según vos |
+| **Ranking** | Puntos vs resultados oficiales |
+| **Admin** | Cargar resultados reales (solo el administrador) |
+
+Los partidos se bloquean **24 horas antes** del inicio.
+
 ---
 
-## Sistema de puntos del ranking
+## Puntos en el ranking
 
-El ranking solo cuenta partidos que ya tienen **resultado oficial** cargado en `match_results`.
+Solo cuentan partidos con resultado oficial cargado.
 
-| Situación | Puntos |
+| Acertás… | Puntos |
+|----------|--------|
+| Marcador exacto (ej. 2–1 y salió 2–1) | **3** |
+| Solo el desenlace (ganó local, visitante o empate, sin el marcador) | **1** |
+| Mal | **0** |
+
+No se suman: cada partido da 3, 1 o 0.
+
+### Qué cuenta como “ganador” (el punto de 1)
+
+- **Fase de grupos:** acertás si coinciden local, visitante o **empate**. Ej.: pronosticaste 1–1 y salió 0–0 → **1 pt** (mismo desenlace, no exacto).
+- **Eliminatorias:** con empate en el marcador tenés que elegir **quién pasa por penales**. El punto de 1 es si coincide **quien avanza**, no solo el empate en el resultado.
+
+### Orden de la tabla (ranking)
+
+Quién va primero:
+
+1. **Más puntos** (columna **Pts**)
+2. A igualdad de puntos: **más exactos**
+3. Si siguen empatados: **nombre** alfabético
+
+**Exactos** y **No exacto** son contadores: cuántos partidos acertaste con 3 pts o con 1 pt. No definen el orden por sí solos, salvo en el desempate del paso 2.
+
+---
+
+## Tablas, clasificados y eliminatorias (simulación)
+
+Acá valen **tus** pronósticos, no los resultados reales del Mundial.
+
+### Tablas de grupos
+
+Puntos por partido (como en la fase de grupos FIFA):
+
+| Resultado | Puntos |
 |-----------|--------|
-| **Resultado exacto** (mismo marcador, ej. pronosticaste 2–1 y salió 2–1) | **3** |
-| **Solo ganador** (acertaste el desenlace sin el marcador exacto) | **1** |
-| Resultado incorrecto | **0** |
-
-### Qué cuenta como “ganador”
-
-- **Fase de grupos:** victoria local, victoria visitante o **empate** (si pronosticaste 1–1 y salió 0–0, cuenta como 1 pt de “ganador”, no como exacto).
-- **Eliminatorias:** si pronosticaste empate en el tiempo reglamentario, tenés que indicar **quién pasa por penales** (`advance_side`). El punto se da si coincide el equipo que avanza con el resultado oficial.
-
-Los puntos **no se suman**: un partido da 3 **o** 1 **o** 0, nunca 3+1.
-
-### Orden en la tabla (quién va primero)
-
-La vista `leaderboard` en Supabase ordena así:
-
-1. **Más puntos totales** (`total_points`)
-2. A igualdad: **más resultados exactos** (`exact_hits`)
-3. A igualdad: **nombre** alfabético
-
-La columna **Pts** en la app es ese total. **Exactos** y **No exacto** son contadores informativos (cuántos partidos caíste en cada categoría). En la pestaña Ranking hay una leyenda breve con las reglas de puntos.
-
----
-
-## Tablas y clasificados (simulación)
-
-Las pestañas **Tablas** y **Clasificados** usan **tus pronósticos**, no los resultados reales. Sirven para ver cómo quedaría el torneo si se cumplieran tus resultados.
-
-### Puntos en la fase de grupos (tablas)
-
-Reglas FIFA estándar sobre cada pronóstico de grupo:
-
-| Resultado del partido | Puntos en la tabla |
-|---------------------|-------------------|
 | Victoria | 3 |
 | Empate | 1 |
 | Derrota | 0 |
 
 **Desempate** en la tabla: más puntos → mejor diferencia de goles → más goles a favor → orden alfabético del equipo.
 
-### Clasificados a eliminatorias
+### Clasificados
 
-- **24 equipos:** 1.º y 2.º de cada uno de los 12 grupos.
-- **8 equipos más:** mejores terceros (los 12 terceros se comparan entre sí con las mismas reglas de desempate).
-- Total: **32** equipos. Los cruces de eliminatorias se resuelven dinámicamente según esos slots.
+De tus tablas salen **32** equipos a eliminatorias:
 
-### Eliminatorias (pronósticos)
+- **24** → 1.º y 2.º de cada uno de los **12** grupos
+- **8** más → mejores **terceros** (los 12 terceros se comparan entre sí con las mismas reglas de desempate)
 
-- Podés pronosticar **empate** en el marcador (90’/120’).
+La pestaña **Clasificados** muestra ese listado. Los cruces del cuadro se calculan con las reglas del Mundial 2026 (incluido qué terceros pueden caer en cada cruce).
+
+### Eliminatorias
+
+- Podés pronosticar **empate** en el marcador (90’ / 120’).
 - Si empatan, elegís **quién pasa por penales** antes de guardar.
-- Los partidos se bloquean **24 horas antes** del kickoff (`matchLock`).
+- Los partidos de cada ronda se van desbloqueando según **tus** resultados anteriores: el rival de un cruce puede cambiar si cambiás un pronóstico de fase previa.
 
 ---
 
-## Pestañas de la app
+## Desarrollo y despliegue
 
-| Pestaña | Descripción |
-|---------|-------------|
-| **Jugar** | Cargar pronósticos; navegación por grupos y fases |
-| **Tablas** | 12 tablas calculadas con tus pronósticos |
-| **Clasificados** | Los 32 que pasarían según tus grupos |
-| **Ranking** | Puntos vs resultados oficiales (vacío hasta que haya resultados cargados) |
-| **Admin** | Solo visible para el UUID configurado en `VITE_ADMIN_USER_ID` |
-
----
-
-## Requisitos
-
-- Node.js 20+
-- [pnpm](https://pnpm.io) 10+ (`corepack enable`)
-- Proyecto en [Supabase](https://supabase.com)
-
----
-
-## Configuración
-
-### 1. Variables de entorno
-
-```bash
-cp .env.example .env
-```
+Para correr el proyecto en tu máquina o publicarlo en GitHub Pages hace falta un proyecto en [Supabase](https://supabase.com) y un archivo `.env` (copiá `.env.example`).
 
 | Variable | Uso |
 |----------|-----|
-| `VITE_SUPABASE_URL` | URL del proyecto Supabase |
-| `VITE_SUPABASE_ANON_KEY` | Clave pública `anon` |
-| `VITE_ADMIN_USER_ID` | UUID del jugador admin (`localStorage` → `prode_player_id`) |
-
-Para saber tu UUID: entrá al prode una vez y en la consola del navegador: `localStorage.getItem('prode_player_id')`.
-
-### 2. Base de datos en Supabase
-
-**La app en producción no usa la carpeta `supabase/`.** Solo habla con tu proyecto en la nube vía `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`. GitHub Pages no despliega ni ejecuta esos SQL.
-
-La carpeta `supabase/` en el repo es **documentación y scripts de mantenimiento** (esquema + generadores de partidos). Conviene versionarla en git, pero **no hace falta “migrar” nada en cada deploy**.
-
-| Situación | Qué hacer |
-|-----------|-----------|
-| **Ya tenés la base configurada** (corriste el SQL antes) | No ejecutes nada más. Solo `.env` y listo. |
-| **Proyecto Supabase nuevo** | Una sola vez: pegá y ejecutá [`supabase/migrations/full_schema.sql`](supabase/migrations/full_schema.sql) en el **SQL Editor** de Supabase. |
-| **Cambio de esquema en el futuro** | Solo entonces aplicá el `.sql` nuevo que corresponda (no usamos Supabase CLI ni `supabase db push`). |
-
-Los archivos `001` … `006` en `supabase/migrations/` son el historial incremental; para un setup nuevo alcanza con **`full_schema.sql`**. Si aplicaste la allowlist (`005`) y querés volver al acceso abierto, ejecutá **`006_restore_open_access.sql`**.
-
-Si regenerás partidos o el schema desde código (opcional, solo desarrollo):
-
-```bash
-pnpm run seed:sql          # actualiza 002_world_cup_2026.sql
-pnpm run seed:full-schema  # actualiza full_schema.sql
-```
-
-### 3. Desarrollo local
-
-```bash
-corepack enable
-pnpm install
-pnpm dev
-```
-
-### 4. GitHub Pages
-
-1. **Settings → Pages → Source:** GitHub Actions  
-2. Secrets del repositorio:
-
-| Secret | Descripción |
-|--------|-------------|
-| `VITE_SUPABASE_URL` | URL de Supabase |
-| `VITE_SUPABASE_ANON_KEY` | Anon key |
+| `VITE_SUPABASE_URL` | URL del proyecto |
+| `VITE_SUPABASE_ANON_KEY` | Clave pública |
 | `VITE_ADMIN_USER_ID` | UUID del administrador |
 
-3. Push a `main` → el workflow [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) publica en `https://<usuario>.github.io/prode/`
+Base nueva en Supabase: ejecutá una vez [`supabase/migrations/full_schema.sql`](supabase/migrations/full_schema.sql) en el SQL Editor.
 
-Si el repo tiene otro nombre, cambiá `base` en [`vite.config.ts`](vite.config.ts).
+```bash
+corepack enable && pnpm install && pnpm dev
+```
 
----
+**GitHub Pages:** en Settings → Pages elegí GitHub Actions. Configurá las tres variables anteriores como secrets o variables del repo o del environment `github-pages`. Push a `main` despliega automáticamente.
 
-## Scripts
-
-| Comando | Descripción |
-|---------|-------------|
-| `pnpm dev` | Servidor de desarrollo |
-| `pnpm build` | Build de producción |
-| `pnpm preview` | Vista previa del build |
-| `pnpm lint` | ESLint |
-| `pnpm test` | Tests unitarios (Vitest) |
-| `pnpm audit:ci` | Auditoría de dependencias (falla en high/critical) |
-| `pnpm run seed:sql` | (Opcional) Regenera SQL de partidos en `supabase/migrations/` |
-| `pnpm run seed:full-schema` | (Opcional) Regenera `full_schema.sql` |
-| `pnpm run flags:copy` | Copia banderas SVG a `public/flags/` |
+Más detalle técnico: [`SECURITY.md`](SECURITY.md), carpeta `supabase/`, workflows en `.github/workflows/`.
 
 ---
 
@@ -192,38 +137,19 @@ Si el repo tiene otro nombre, cambiá `base` en [`vite.config.ts`](vite.config.t
 
 ```
 src/
-  components/     # UI (partidos, tablas, ranking, admin)
-  lib/            # Lógica: scoring, standings, bracket, API
-  i18n/           # Español / inglés
-  data/           # Grupos WC2026, mapa de banderas
-supabase/         # Solo referencia / setup inicial (no va al build)
-  migrations/     # SQL para pegar en Supabase Editor
-  seed/           # Fuente TS para regenerar esos SQL
-public/flags/     # Banderas locales (SVG)
+  components/     # Pantallas y UI (partidos, tablas, ranking, admin)
+  lib/            # Lógica del torneo y conexión con Supabase
+  i18n/           # Textos en español e inglés
+  data/           # Grupos del Mundial y banderas
+supabase/
+  migrations/     # SQL para armar la base (una vez en Supabase)
+  seed/           # Generadores internos de esos SQL
+public/flags/     # Banderas en SVG
 ```
-
----
-
-## Seguridad y CI
-
-Ver también [`SECURITY.md`](SECURITY.md).
-
-- Sin login: cada navegador guarda un UUID en `localStorage` y elige su nombre al entrar.
-- RLS abierta para `anon` en pronósticos y resultados (grupo cerrado de confianza).
-- La pestaña Admin solo se muestra si `playerId === VITE_ADMIN_USER_ID` (no es seguridad fuerte ante quien use la API directamente).
-
-### CI/CD (GitHub Actions)
-
-| Workflow | Cuándo | Qué hace |
-|----------|--------|----------|
-| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | PR y push a `main` | `lint`, `test`, `build` (env dummy), `pnpm audit` |
-| [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) | Push a `main` | Quality gates + deploy a Pages |
-
-Recomendado: **branch protection** en `main` → requerir que el check `CI` pase antes de merge.
 
 ---
 
 ## Fuentes del fixture
 
-- Fase de grupos: calendario post-sorteo (Olympics.com / FIFA)
-- Eliminatorias: FIFA / Wikipedia — 2026 knockout stage
+- **Fase de grupos:** calendario post-sorteo (Olympics.com / FIFA)
+- **Eliminatorias:** FIFA / Wikipedia — [2026 knockout stage](https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_knockout_stage)
