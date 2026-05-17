@@ -14,9 +14,8 @@ import { LeaderboardScreen } from './LeaderboardScreen'
 import { NavSidebar } from './NavSidebar'
 import { AdminResultsScreen } from './AdminResultsScreen'
 import { EditPredictionsScreen } from './EditPredictionsScreen'
-import { QualifiedSummary } from './QualifiedSummary'
 import { SwipeMatchDeck } from './SwipeMatchDeck'
-type Tab = 'play' | 'edit' | 'standings' | 'qualified' | 'ranking' | 'admin'
+type Tab = 'play' | 'edit' | 'standings' | 'ranking' | 'admin'
 
 type Props = {
   playerId: string
@@ -81,25 +80,17 @@ export const MatchesScreen = ({
 
   const tabs: {
     id: Tab
-    labelKey:
-      | 'tab.play'
-      | 'tab.edit'
-      | 'tab.standings'
-      | 'tab.qualified'
-      | 'tab.ranking'
-      | 'tab.admin'
+    labelKey: 'tab.play' | 'tab.edit' | 'tab.standings' | 'tab.ranking' | 'tab.admin'
     shortLabelKey:
       | 'tab.playShort'
       | 'tab.editShort'
       | 'tab.standingsShort'
-      | 'tab.qualifiedShort'
       | 'tab.rankingShort'
       | 'tab.adminShort'
   }[] = [
     { id: 'play', labelKey: 'tab.play', shortLabelKey: 'tab.playShort' },
     { id: 'edit', labelKey: 'tab.edit', shortLabelKey: 'tab.editShort' },
     { id: 'standings', labelKey: 'tab.standings', shortLabelKey: 'tab.standingsShort' },
-    { id: 'qualified', labelKey: 'tab.qualified', shortLabelKey: 'tab.qualifiedShort' },
     { id: 'ranking', labelKey: 'tab.ranking', shortLabelKey: 'tab.rankingShort' },
     ...(showAdmin
       ? [{ id: 'admin' as const, labelKey: 'tab.admin' as const, shortLabelKey: 'tab.adminShort' as const }]
@@ -260,15 +251,6 @@ export const MatchesScreen = ({
 
         {tab === 'standings' && (
           <AllStandingsGrid matches={matches} predictions={predictions} tournament={tournament} />
-        )}
-
-        {tab === 'qualified' && (
-          <QualifiedSummary
-            teams={tournament.qualifiedTeams}
-            complete={tournament.groupStageComplete}
-            groupMatchesDone={matches.filter((m) => m.stage === 'group' && predictions.has(m.id)).length}
-            groupMatchesTotal={matches.filter((m) => m.stage === 'group').length}
-          />
         )}
 
         {tab === 'ranking' && (

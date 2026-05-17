@@ -64,6 +64,22 @@ describe('rankGroupStandings', () => {
     expect(ranked.map((t) => t.team)).toEqual(['México', 'Sudáfrica', 'Corea del Sur'])
   })
 
+  it('keeps draw slot order (not FIFA ranking) when every team is on 0 pts with no matches played', () => {
+    const teams = [
+      standing('B1', 'Canadá', 0, 0, 0),
+      standing('B2', 'Bosnia y Herzegovina', 0, 0, 0),
+      standing('B3', 'Qatar', 0, 0, 0),
+      standing('B4', 'Suiza', 0, 0, 0),
+    ]
+    const ranked = rankGroupStandings(teams, [])
+    expect(ranked.map((t) => t.team)).toEqual([
+      'Canadá',
+      'Bosnia y Herzegovina',
+      'Qatar',
+      'Suiza',
+    ])
+  })
+
   it('falls back to overall goal difference when head-to-head does not separate teams', () => {
     const teams = [
       standing('A1', 'México', 4, 4, 2),

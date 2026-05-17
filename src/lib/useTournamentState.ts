@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import type { GroupLetter } from '../data/wc2026-groups'
 import { resolveAllMatches } from './bracketResolver'
 import { applyKnockoutResults } from './knockoutAdvance'
-import { buildSlotMap, getQualifiedTeams } from './qualification'
-import { allGroupMatchesPredicted, computeAllGroupStandings } from './standings'
-import { rankThirdPlaces, topEightThirdPlaces } from './thirdPlace'
+import { buildSlotMap } from './qualification'
+import { computeAllGroupStandings } from './standings'
+import { rankThirdPlaces } from './thirdPlace'
 import type { Match, Prediction } from '../types/database'
 import type { TeamStanding } from './standings'
 import type { ThirdPlaceEntry } from './thirdPlace'
@@ -12,11 +12,8 @@ import type { ResolvedMatch } from './bracketResolver'
 
 export type TournamentState = {
   standingsByGroup: Record<GroupLetter, TeamStanding[]>
-  thirdPlaceRanked: ThirdPlaceEntry[]
   topThirds: ThirdPlaceEntry[]
   slotMap: Map<string, string>
-  qualifiedTeams: string[]
-  groupStageComplete: boolean
   resolvedMatches: ResolvedMatch[]
 }
 
@@ -25,23 +22,17 @@ export const computeTournamentState = (
   predictions: Map<string, Prediction>,
 ): TournamentState => {
   const standingsByGroup = computeAllGroupStandings(matches, predictions)
-  const thirdPlaceRanked = rankThirdPlaces(standingsByGroup)
-  const topThirds = topEightThirdPlaces(thirdPlaceRanked)
-  const groupStageComplete = allGroupMatchesPredicted(matches, predictions)
+  const topThirds = rankThirdPlaces(standingsByGroup).slice(0, 8)
 
-  let slotMap = buildSlotMap(standingsByGroup, groupStageComplete ? topThirds : [])
+  let slotMap = buildSlotMap(standingsByGroup, topThirds)
   slotMap = applyKnockoutResults(matches, predictions, slotMap)
 
-  const qualifiedTeams = groupStageComplete ? getQualifiedTeams(buildSlotMap(standingsByGroup, topThirds)) : []
   const resolvedMatches = resolveAllMatches(matches, slotMap)
 
   return {
     standingsByGroup,
-    thirdPlaceRanked,
     topThirds,
     slotMap,
-    qualifiedTeams,
-    groupStageComplete,
     resolvedMatches,
   }
 }

@@ -17,7 +17,7 @@ Cómo calculamos cruces, desempates y el ranking exacto… eso se queda en el c�
 ## Cómo se usa
 
 1. Entrás, elegís un nombre y guardás pronósticos.
-2. En **Tablas** y **Clasificados** ves cómo quedaría el torneo **si se cumplieran tus resultados** (no los oficiales).
+2. En **Tablas** ves cómo quedarían los grupos **si se cumplieran tus resultados** (no los oficiales).
 3. Quien administra el prode carga los **resultados reales** en **Admin**.
 4. En **Ranking** se suman los puntos comparando tus pronósticos con esos resultados.
 
@@ -42,7 +42,6 @@ flowchart LR
 | **Jugar** | Cargar pronósticos partido a partido |
 | **Resultados** | Ver y cambiar pronósticos ya guardados (hasta 24 h antes del partido) |
 | **Tablas** | Posiciones de grupos según tus pronósticos |
-| **Clasificados** | Los 32 que pasarían según vos |
 | **Ranking** | Puntos vs resultados oficiales |
 | **Admin** | Cargar resultados reales (solo el administrador) |
 
@@ -79,7 +78,7 @@ Quién va primero:
 
 ---
 
-## Tablas, clasificados y eliminatorias (simulación)
+## Tablas y eliminatorias (simulación)
 
 Acá valen **tus** pronósticos, no los resultados reales del Mundial.
 
@@ -95,16 +94,7 @@ Puntos por partido (como en la fase de grupos FIFA):
 
 **Desempate** en la tabla (según [Reglamento FIFA Mundial 2026](https://digitalhub.fifa.com/m/636f5c9c6f29771f/original/FWC2026_regulations_EN.pdf), artículo 13): más puntos → enfrentamientos directos entre empatados (puntos, diferencia y goles a favor en esos partidos, con re-aplicación si siguen empatados) → diferencia de goles en todo el grupo → goles a favor en todo el grupo → ranking FIFA/Coca-Cola (snapshot en `src/data/wc2026-fifa-ranking.ts`). El **fair play** (tarjetas) no se simula porque no hay datos de tarjetas en el prode.
 
-Los **mejores 8 terceros** usan puntos, diferencia y goles en todos los partidos del grupo, luego ranking FIFA (sin mini-liga entre terceros).
-
-### Clasificados
-
-De tus tablas salen **32** equipos a eliminatorias:
-
-- **24** → 1.º y 2.º de cada uno de los **12** grupos
-- **8** más → mejores **terceros** (los 12 terceros se comparan entre sí con las mismas reglas de desempate)
-
-La pestaña **Clasificados** muestra ese listado. Los cruces del cuadro se calculan con las reglas del Mundial 2026 (incluido qué terceros pueden caer en cada cruce).
+Los **mejores 8 terceros** usan puntos, diferencia y goles en todos los partidos del grupo, luego ranking FIFA (sin mini-liga entre terceros). Con eso se arman los **32** clasificados a eliminatorias (24 por 1.º/2.º de grupo + 8 terceros) y los cruces del cuadro según las reglas del Mundial 2026.
 
 ### Eliminatorias
 

@@ -6,6 +6,31 @@ import type { TeamStanding } from './standings'
 
 export type SlotMap = Map<string, string>
 
+/** Map each 3@ match to a qualified third-placed group (FIFA Annex C candidate pools). */
+const assignThirdPlaceMatches = (topThirds: ThirdPlaceEntry[]): Map<number, GroupLetter> => {
+  const assignment = new Map<number, GroupLetter>()
+  const used = new Set<GroupLetter>()
+
+  const tryAssign = (index: number): boolean => {
+    if (index >= THIRD_PLACE_MATCH_ORDER.length) return true
+    const matchNum = THIRD_PLACE_MATCH_ORDER[index]!
+    const pool = THIRD_PLACE_CANDIDATES[matchNum] ?? []
+
+    for (const entry of topThirds) {
+      if (used.has(entry.group) || !pool.includes(entry.group)) continue
+      used.add(entry.group)
+      assignment.set(matchNum, entry.group)
+      if (tryAssign(index + 1)) return true
+      used.delete(entry.group)
+      assignment.delete(matchNum)
+    }
+    return false
+  }
+
+  tryAssign(0)
+  return assignment
+}
+
 export const buildSlotMap = (
   standingsByGroup: Record<GroupLetter, TeamStanding[]>,
   topThirds: ThirdPlaceEntry[],
@@ -18,34 +43,13 @@ export const buildSlotMap = (
     if (table[1]) slots.set(`2${g}`, table[1].team)
   }
 
-  const qualifiedGroups = new Set(topThirds.map((t) => t.group))
-  const assignedThirdGroups = new Set<GroupLetter>()
+  const thirdByGroup = new Map(topThirds.map((t) => [t.group, t]))
+  const thirdPlaceMatches = assignThirdPlaceMatches(topThirds)
 
-  for (const matchNum of THIRD_PLACE_MATCH_ORDER) {
-    const candidates = THIRD_PLACE_CANDIDATES[matchNum] ?? []
-    const entry = topThirds.find(
-      (t) =>
-        candidates.includes(t.group) &&
-        qualifiedGroups.has(t.group) &&
-        !assignedThirdGroups.has(t.group),
-    )
-    if (entry) {
-      slots.set(`3@${matchNum}`, entry.team)
-      assignedThirdGroups.add(entry.group)
-    }
-  }
-
-  for (const t of topThirds) {
-    if (!assignedThirdGroups.has(t.group)) {
-      slots.set(`3${t.group}`, t.team)
-    }
+  for (const [matchNum, group] of thirdPlaceMatches) {
+    const entry = thirdByGroup.get(group)
+    if (entry) slots.set(`3@${matchNum}`, entry.team)
   }
 
   return slots
-}
-
-export const getQualifiedTeams = (slots: SlotMap): string[] => {
-  const teams = new Set<string>()
-  for (const v of slots.values()) teams.add(v)
-  return [...teams].sort((a, b) => a.localeCompare(b))
 }

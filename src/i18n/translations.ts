@@ -25,8 +25,6 @@ const es = {
   'tab.editShort': 'Mis res.',
   'tab.standings': 'Tablas',
   'tab.standingsShort': 'Tablas',
-  'tab.qualified': 'Clasificados',
-  'tab.qualifiedShort': 'Clasif.',
   'tab.ranking': 'Ranking',
   'tab.rankingShort': 'Rank',
   'tab.admin': 'Admin',
@@ -110,11 +108,6 @@ const es = {
   'standings.goalsAgainst': 'GC',
   'standings.goalDiff': 'DG',
 
-  'qualified.title': 'Tus clasificados a eliminatorias',
-  'qualified.incomplete':
-    'Completá los pronósticos de fase de grupos ({done}/{total}) para calcular los 32 clasificados según tus resultados.',
-  'qualified.complete': '32 equipos según tus pronósticos',
-
   'ranking.loading': 'Cargando ranking…',
   'ranking.loadError': 'Error al cargar ranking',
   'ranking.empty':
@@ -159,8 +152,6 @@ const en: Record<keyof typeof es, string> = {
   'tab.editShort': 'Picks',
   'tab.standings': 'Tables',
   'tab.standingsShort': 'Tables',
-  'tab.qualified': 'Qualified',
-  'tab.qualifiedShort': 'Qual.',
   'tab.ranking': 'Ranking',
   'tab.rankingShort': 'Rank',
   'tab.admin': 'Admin',
@@ -242,11 +233,6 @@ const en: Record<keyof typeof es, string> = {
   'standings.goalsFor': 'GF',
   'standings.goalsAgainst': 'GA',
   'standings.goalDiff': 'GD',
-
-  'qualified.title': 'Your knockout qualifiers',
-  'qualified.incomplete':
-    'Complete group-stage predictions ({done}/{total}) to calculate all 32 qualifiers from your results.',
-  'qualified.complete': '32 teams from your predictions',
 
   'ranking.loading': 'Loading leaderboard…',
   'ranking.loadError': 'Failed to load leaderboard',

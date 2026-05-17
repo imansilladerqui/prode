@@ -32,5 +32,3 @@ export const rankThirdPlaces = (
   }
   return thirds.sort(compareThirdPlaceFifa)
 }
-
-export const topEightThirdPlaces = (ranked: ThirdPlaceEntry[]): ThirdPlaceEntry[] => ranked.slice(0, 8)

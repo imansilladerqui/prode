@@ -56,12 +56,8 @@ export const computeGroupStandings = (
   predictions: Map<string, Prediction>,
 ): TeamStanding[] => {
   const table = new Map<string, TeamStanding>()
-  GROUP_LETTERS.forEach((g) => {
-    if (g === group) {
-      WC2026_GROUPS[g].forEach((_, i) => {
-        table.set(`${g}${i + 1}`, emptyStanding(g, i))
-      })
-    }
+  WC2026_GROUPS[group].forEach((_, i) => {
+    table.set(`${group}${i + 1}`, emptyStanding(group, i))
   })
 
   const groupMatches = matches.filter((m) => m.stage === 'group' && m.group_name === `Grupo ${group}`)
@@ -128,9 +124,4 @@ export const countGroupMatchesPredicted = (
   const groupMatches = matches.filter((m) => m.stage === 'group' && m.group_name === `Grupo ${group}`)
   const done = groupMatches.filter((m) => predictions.has(m.id)).length
   return { done, total: groupMatches.length }
-}
-
-export const allGroupMatchesPredicted = (matches: Match[], predictions: Map<string, Prediction>): boolean => {
-  const groupMatches = matches.filter((m) => m.stage === 'group')
-  return groupMatches.length > 0 && groupMatches.every((m) => predictions.has(m.id))
 }

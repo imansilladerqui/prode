@@ -57,8 +57,21 @@ const compareMini = (a: MiniStanding, b: MiniStanding): number => {
 const compareFifaRanking = (a: TeamStanding, b: TeamStanding): number =>
   fifaRankingIndex(a.team) - fifaRankingIndex(b.team)
 
-/** Article 13 step 3 (g): most recent FIFA ranking; (h) uses same snapshot when only one edition is stored. */
-const compareFifaRankingCascade = (a: TeamStanding, b: TeamStanding): number => {
+/** Draw slot order (B1 before B4) — used when no group match is predicted yet. */
+const slotDrawOrder = (slot: string): number => {
+  const m = /^([A-L])([1-4])$/.exec(slot)
+  if (!m) return 999
+  return (m[1]!.charCodeAt(0) - 65) * 10 + Number(m[2])
+}
+
+const allYetToPlay = (teams: TeamStanding[]): boolean => teams.every((t) => t.played === 0)
+
+/**
+ * FIFA ranking (g/h) only after at least one group result exists.
+ * With 0 pts and 0 played for everyone, keep official draw order (slot 1–4).
+ */
+const compareFinalTiebreak = (a: TeamStanding, b: TeamStanding, pool: TeamStanding[]): number => {
+  if (allYetToPlay(pool)) return slotDrawOrder(a.slot) - slotDrawOrder(b.slot)
   const diff = compareFifaRanking(a, b)
   if (diff !== 0) return diff
   return a.team.localeCompare(b.team)
@@ -87,7 +100,7 @@ const peelByCriterion = (
       const [next, ...rest] = remainingCriteria
       result.push(...peelByCriterion(bucket, next!, rest))
     } else {
-      result.push(...[...bucket].sort(compareFifaRankingCascade))
+      result.push(...[...bucket].sort((a, b) => compareFinalTiebreak(a, b, bucket)))
     }
     i = j
   }
@@ -113,7 +126,7 @@ const rankByHeadToHead = (
   const sorted = [...teams].sort((a, b) => {
     const cmp = compareMini(stats.get(a.slot)!, stats.get(b.slot)!)
     if (cmp !== 0) return cmp
-    return compareFifaRankingCascade(a, b)
+    return compareFinalTiebreak(a, b, teams)
   })
 
   const groups: TeamStanding[][] = []
