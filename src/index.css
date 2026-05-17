@@ -23,6 +23,9 @@
   --accent-hover: #329532;
   --accent-soft: color-mix(in srgb, var(--wc-green) 22%, transparent);
   --danger: var(--wc-red);
+  --warning: #c97a00;
+  --warning-soft: color-mix(in srgb, var(--warning) 14%, white);
+  --warning-border: color-mix(in srgb, var(--warning) 45%, white);
   --qualify-direct: color-mix(in srgb, var(--wc-green) 18%, white);
   --qualify-third: color-mix(in srgb, var(--wc-red) 14%, white);
   --shadow: 0 16px 40px -12px rgb(26 35 80 / 0.45);

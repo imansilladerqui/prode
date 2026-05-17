@@ -20,10 +20,25 @@ const es = {
   'name.saveError': 'No se pudo guardar el nombre',
 
   'tab.play': 'Jugar',
+  'tab.edit': 'Resultados',
   'tab.standings': 'Tablas',
   'tab.qualified': 'Clasificados',
   'tab.ranking': 'Ranking',
   'tab.admin': 'Admin',
+
+  'edit.title': 'Resultados',
+  'edit.hint': 'Podés cambiar tus pronósticos hasta 24 horas antes de cada partido.',
+  'edit.hintAria': 'Plazo para editar pronósticos',
+  'edit.filterEditable': 'Abiertos',
+  'edit.filterClosed': 'Cerrados',
+  'edit.filtersAria': 'Filtrar pronósticos',
+  'edit.colKickoff': 'Horario',
+  'edit.colResult': 'Resultado',
+  'edit.colActions': 'Reset / Guardar',
+  'edit.reset': 'Reset',
+  'edit.resetting': 'Reseteando…',
+  'edit.locked': 'Cerrado',
+  'edit.empty': 'No hay pronósticos en este filtro.',
 
   'admin.title': 'Resultados oficiales',
   'admin.colNum': '#',
@@ -108,6 +123,7 @@ const es = {
   'error.knockoutAdvanceRequired':
     'En empate tenés que elegir quién pasa por penales',
   'error.savePrediction': 'No se pudo guardar el pronóstico',
+  'error.deletePrediction': 'No se pudo borrar el pronóstico',
 } as const
 
 const en: Record<keyof typeof es, string> = {
@@ -128,10 +144,25 @@ const en: Record<keyof typeof es, string> = {
   'name.saveError': 'Could not save name',
 
   'tab.play': 'Play',
+  'tab.edit': 'Results',
   'tab.standings': 'Tables',
   'tab.qualified': 'Qualified',
   'tab.ranking': 'Ranking',
   'tab.admin': 'Admin',
+
+  'edit.title': 'Results',
+  'edit.hint': 'You can change predictions until 24 hours before each match.',
+  'edit.hintAria': 'Prediction edit deadline',
+  'edit.filterEditable': 'Open',
+  'edit.filterClosed': 'Closed',
+  'edit.filtersAria': 'Filter predictions',
+  'edit.colKickoff': 'Kickoff',
+  'edit.colResult': 'Result',
+  'edit.colActions': 'Reset / Save',
+  'edit.reset': 'Reset',
+  'edit.resetting': 'Resetting…',
+  'edit.locked': 'Locked',
+  'edit.empty': 'No predictions in this filter.',
 
   'admin.title': 'Official results',
   'admin.colNum': '#',
@@ -214,6 +245,7 @@ const en: Record<keyof typeof es, string> = {
   'error.negativeGoals': 'Scores cannot be negative',
   'error.knockoutAdvanceRequired': 'On a draw you must pick who advances on penalties',
   'error.savePrediction': 'Could not save prediction',
+  'error.deletePrediction': 'Could not delete prediction',
 }
 
 export type MessageKey = keyof typeof es

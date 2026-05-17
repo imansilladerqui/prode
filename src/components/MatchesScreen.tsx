@@ -13,9 +13,10 @@ import { LanguageSwitcher } from './LanguageSwitcher'
 import { LeaderboardScreen } from './LeaderboardScreen'
 import { NavSidebar } from './NavSidebar'
 import { AdminResultsScreen } from './AdminResultsScreen'
+import { EditPredictionsScreen } from './EditPredictionsScreen'
 import { QualifiedSummary } from './QualifiedSummary'
 import { SwipeMatchDeck } from './SwipeMatchDeck'
-type Tab = 'play' | 'standings' | 'qualified' | 'ranking' | 'admin'
+type Tab = 'play' | 'edit' | 'standings' | 'qualified' | 'ranking' | 'admin'
 
 type Props = {
   playerId: string
@@ -29,12 +30,14 @@ type Props = {
   draftScores: Map<string, DraftScore>
   error: string | null
   savingMatchId: string | null
+  deletingMatchId: string | null
   savingResultMatchId: string | null
   savedMatchId: string | null
   onDraftChange: (matchId: string, side: 'a' | 'b', value: string) => void
   onAdvanceSideChange: (matchId: string, side: AdvanceSide) => void
   onApplyCommon: (matchId: string, scoreA: number, scoreB: number) => void
   onSave: (matchId: string) => Promise<boolean>
+  onDelete: (matchId: string) => Promise<boolean>
   onSaveResult: (
     matchId: string,
     scoreA: number,
@@ -62,12 +65,14 @@ export const MatchesScreen = ({
   draftScores,
   error,
   savingMatchId,
+  deletingMatchId,
   savingResultMatchId,
   savedMatchId,
   onDraftChange,
   onAdvanceSideChange,
   onApplyCommon,
   onSave,
+  onDelete,
   onSaveResult,
 }: Props) => {
   const { t } = useI18n()
@@ -76,9 +81,16 @@ export const MatchesScreen = ({
 
   const tabs: {
     id: Tab
-    labelKey: 'tab.play' | 'tab.standings' | 'tab.qualified' | 'tab.ranking' | 'tab.admin'
+    labelKey:
+      | 'tab.play'
+      | 'tab.edit'
+      | 'tab.standings'
+      | 'tab.qualified'
+      | 'tab.ranking'
+      | 'tab.admin'
   }[] = [
     { id: 'play', labelKey: 'tab.play' },
+    { id: 'edit', labelKey: 'tab.edit' },
     { id: 'standings', labelKey: 'tab.standings' },
     { id: 'qualified', labelKey: 'tab.qualified' },
     { id: 'ranking', labelKey: 'tab.ranking' },
@@ -218,6 +230,21 @@ export const MatchesScreen = ({
             </main>
             <aside className="app-shell__aside">{liveStandings}</aside>
           </div>
+        )}
+
+        {tab === 'edit' && (
+          <EditPredictionsScreen
+            matches={matches}
+            resolvedMatches={tournament.resolvedMatches}
+            predictions={predictions}
+            draftScores={draftScores}
+            savingMatchId={savingMatchId}
+            deletingMatchId={deletingMatchId}
+            onDraftChange={onDraftChange}
+            onAdvanceSideChange={onAdvanceSideChange}
+            onSave={onSave}
+            onDelete={onDelete}
+          />
         )}
 
         {tab === 'standings' && (

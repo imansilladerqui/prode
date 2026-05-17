@@ -13,11 +13,13 @@
     "audit:ci": "pnpm audit --audit-level=high",
     "seed:sql": "tsx supabase/seed/generate-sql.ts",
     "seed:full-schema": "tsx supabase/seed/generate-full-schema.ts",
-    "flags:copy": "tsx scripts/copy-flags.ts"
+    "flags:copy": "tsx scripts/copy-flags.ts",
+    "lottie:loader": "tsx scripts/generate-loader-lottie.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
     "country-flag-icons": "^1.6.17",
+    "lottie-react": "^2.4.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },

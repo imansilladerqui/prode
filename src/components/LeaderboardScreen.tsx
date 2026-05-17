@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Loader } from './Loader'
 import { fetchLeaderboard } from '../lib/api'
 import { useI18n } from '../i18n/useI18n'
 import type { LeaderboardRow } from '../types/database'
@@ -48,8 +49,8 @@ export const LeaderboardScreen = ({ playerId, active }: Props) => {
 
   if (loading) {
     return (
-      <div className="leaderboard-wrap">
-        <p className="muted leaderboard-loading">{t('ranking.loading')}</p>
+      <div className="leaderboard-wrap leaderboard-wrap--loading">
+        <Loader className="loader--on-surface" />
       </div>
     )
   }

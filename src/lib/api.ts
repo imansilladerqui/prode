@@ -71,7 +71,7 @@ export const upsertPrediction = async (
   scoreA: number,
   scoreB: number,
   advanceSide: AdvanceSide | null = null,
-): Promise<void> => {
+): Promise<Prediction> => {
   const row = {
     user_id: userId,
     match_id: matchId,
@@ -79,8 +79,25 @@ export const upsertPrediction = async (
     score_b: scoreB,
     advance_side: advanceSide,
   }
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('predictions')
-    .upsert(row as Prediction, { onConflict: 'user_id,match_id' })
+    .upsert(row, { onConflict: 'user_id,match_id' })
+    .select()
+    .single()
   if (error) throw error
+  if (!data) throw new Error('Prediction was not saved to the database')
+  return data as Prediction
+}
+
+export const deletePrediction = async (userId: string, matchId: string): Promise<void> => {
+  const { data, error } = await supabase
+    .from('predictions')
+    .delete()
+    .eq('user_id', userId)
+    .eq('match_id', matchId)
+    .select('match_id')
+  if (error) throw error
+  if (!data?.length) {
+    throw new Error('Prediction was not deleted from the database')
+  }
 }

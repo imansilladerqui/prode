@@ -11,6 +11,7 @@ import {
   fetchMatches,
   fetchPredictions,
   fetchUser,
+  deletePrediction,
   insertUser,
   upsertMatchResult,
   upsertPrediction,
@@ -41,6 +42,7 @@ const AppContent = () => {
   const [error, setError] = useState<string | null>(null)
   const [matchResults, setMatchResults] = useState<Map<string, MatchResult>>(new Map())
   const [savingMatchId, setSavingMatchId] = useState<string | null>(null)
+  const [deletingMatchId, setDeletingMatchId] = useState<string | null>(null)
   const [savingResultMatchId, setSavingResultMatchId] = useState<string | null>(null)
   const [savedMatchId, setSavedMatchId] = useState<string | null>(null)
   const showAdmin = isAdmin(playerId)
@@ -52,6 +54,37 @@ const AppContent = () => {
 
   const tournament = useTournamentState(matches, predictions)
 
+  const applyPredictionsToState = (
+    matchList: Match[],
+    predictionList: Prediction[],
+    allPreds: Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>[],
+  ) => {
+    setCommunityPredictions(allPreds)
+    const predMap = new Map(predictionList.map((p) => [p.match_id, p]))
+    setPredictions(predMap)
+    setDraftScores((prev) => {
+      const drafts = new Map<string, DraftScore>()
+      for (const m of matchList) {
+        const p = predMap.get(m.id)
+        const local = prev.get(m.id)
+        drafts.set(m.id, {
+          a: p != null ? String(p.score_a) : (local?.a ?? ''),
+          b: p != null ? String(p.score_b) : (local?.b ?? ''),
+          advanceSide: p?.advance_side ?? local?.advanceSide ?? null,
+        })
+      }
+      return drafts
+    })
+  }
+
+  const syncPredictionsFromDb = async () => {
+    const [predictionList, allPreds] = await Promise.all([
+      fetchPredictions(playerId),
+      fetchAllPredictions(),
+    ])
+    applyPredictionsToState(matches, predictionList, allPreds)
+  }
+
   const loadMatchesData = async () => {
     const [matchList, predictionList, allPreds, resultsList] = await Promise.all([
       fetchMatches(),
@@ -60,20 +93,8 @@ const AppContent = () => {
       fetchMatchResults(),
     ])
     setMatches(matchList)
-    setCommunityPredictions(allPreds)
-    const predMap = new Map(predictionList.map((p) => [p.match_id, p]))
-    setPredictions(predMap)
     setMatchResults(new Map(resultsList.map((r) => [r.match_id, r])))
-    const drafts = new Map<string, DraftScore>()
-    for (const m of matchList) {
-      const p = predMap.get(m.id)
-      drafts.set(m.id, {
-        a: p != null ? String(p.score_a) : '',
-        b: p != null ? String(p.score_b) : '',
-        advanceSide: p?.advance_side ?? null,
-      })
-    }
-    setDraftScores(drafts)
+    applyPredictionsToState(matchList, predictionList, allPreds)
   }
 
   useEffect(() => {
@@ -228,20 +249,17 @@ const AppContent = () => {
     try {
       setError(null)
       setSavingMatchId(matchId)
-      await upsertPrediction(playerId, matchId, scoreA, scoreB, advanceSide)
-      const existing = predictions.get(matchId)
-      const updated: Prediction = {
-        id: existing?.id ?? crypto.randomUUID(),
-        user_id: playerId,
-        match_id: matchId,
-        score_a: scoreA,
-        score_b: scoreB,
-        advance_side: advanceSide,
-        created_at: existing?.created_at ?? new Date().toISOString(),
-      }
-      setPredictions((prev) => new Map(prev).set(matchId, updated))
-      const allPreds = await fetchAllPredictions()
-      setCommunityPredictions(allPreds)
+      const saved = await upsertPrediction(playerId, matchId, scoreA, scoreB, advanceSide)
+      await syncPredictionsFromDb()
+      setDraftScores((prev) => {
+        const next = new Map(prev)
+        next.set(matchId, {
+          a: String(saved.score_a),
+          b: String(saved.score_b),
+          advanceSide: saved.advance_side,
+        })
+        return next
+      })
       setSavedMatchId(matchId)
       window.setTimeout(() => setSavedMatchId((id) => (id === matchId ? null : id)), 2000)
       return true
@@ -253,10 +271,39 @@ const AppContent = () => {
     }
   }
 
+  const handleDeletePrediction = async (matchId: string): Promise<boolean> => {
+    const match = matches.find((m) => m.id === matchId)
+    if (!match) return false
+
+    if (!canEditPrediction(match.match_date)) {
+      setError(t('match.lock'))
+      return false
+    }
+
+    try {
+      setError(null)
+      setDeletingMatchId(matchId)
+      await deletePrediction(playerId, matchId)
+      await syncPredictionsFromDb()
+      setDraftScores((prev) => {
+        const next = new Map(prev)
+        next.set(matchId, emptyDraft())
+        return next
+      })
+      setSavedMatchId(null)
+      return true
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('error.deletePrediction'))
+      return false
+    } finally {
+      setDeletingMatchId(null)
+    }
+  }
+
   if (screen === 'loading') {
     return (
       <div className="app app--loading">
-        <Loader label={t('app.loading')} />
+        <Loader />
       </div>
     )
   }
@@ -331,12 +378,14 @@ const AppContent = () => {
         draftScores={draftScores}
         error={error}
         savingMatchId={savingMatchId}
+        deletingMatchId={deletingMatchId}
         savingResultMatchId={savingResultMatchId}
         savedMatchId={savedMatchId}
         onDraftChange={updateDraft}
         onAdvanceSideChange={updateAdvanceSide}
         onApplyCommon={applyCommon}
         onSave={handleSavePrediction}
+        onDelete={handleDeletePrediction}
         onSaveResult={handleSaveResult}
       />
       <KnockoutAdvanceDialog

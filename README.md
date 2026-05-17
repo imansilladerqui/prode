@@ -39,7 +39,8 @@ flowchart LR
 
 | Pestaña | Para qué sirve |
 |---------|----------------|
-| **Jugar** | Cargar y editar pronósticos |
+| **Jugar** | Cargar pronósticos partido a partido |
+| **Resultados** | Ver y cambiar pronósticos ya guardados (hasta 24 h antes del partido) |
 | **Tablas** | Posiciones de grupos según tus pronósticos |
 | **Clasificados** | Los 32 que pasarían según vos |
 | **Ranking** | Puntos vs resultados oficiales |
