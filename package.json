@@ -14,7 +14,8 @@
     "seed:sql": "tsx supabase/seed/generate-sql.ts",
     "seed:full-schema": "tsx supabase/seed/generate-full-schema.ts",
     "flags:copy": "tsx scripts/copy-flags.ts",
-    "lottie:loader": "tsx scripts/generate-loader-lottie.ts"
+    "lottie:loader": "tsx scripts/generate-loader-lottie.ts",
+    "favicon:generate": "tsx scripts/generate-favicon.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
