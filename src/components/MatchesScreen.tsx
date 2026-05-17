@@ -88,13 +88,22 @@ export const MatchesScreen = ({
       | 'tab.qualified'
       | 'tab.ranking'
       | 'tab.admin'
+    shortLabelKey:
+      | 'tab.playShort'
+      | 'tab.editShort'
+      | 'tab.standingsShort'
+      | 'tab.qualifiedShort'
+      | 'tab.rankingShort'
+      | 'tab.adminShort'
   }[] = [
-    { id: 'play', labelKey: 'tab.play' },
-    { id: 'edit', labelKey: 'tab.edit' },
-    { id: 'standings', labelKey: 'tab.standings' },
-    { id: 'qualified', labelKey: 'tab.qualified' },
-    { id: 'ranking', labelKey: 'tab.ranking' },
-    ...(showAdmin ? [{ id: 'admin' as const, labelKey: 'tab.admin' as const }] : []),
+    { id: 'play', labelKey: 'tab.play', shortLabelKey: 'tab.playShort' },
+    { id: 'edit', labelKey: 'tab.edit', shortLabelKey: 'tab.editShort' },
+    { id: 'standings', labelKey: 'tab.standings', shortLabelKey: 'tab.standingsShort' },
+    { id: 'qualified', labelKey: 'tab.qualified', shortLabelKey: 'tab.qualifiedShort' },
+    { id: 'ranking', labelKey: 'tab.ranking', shortLabelKey: 'tab.rankingShort' },
+    ...(showAdmin
+      ? [{ id: 'admin' as const, labelKey: 'tab.admin' as const, shortLabelKey: 'tab.adminShort' as const }]
+      : []),
   ]
 
   const resolvedById = useMemo(() => {
@@ -160,16 +169,18 @@ export const MatchesScreen = ({
       </header>
 
         <nav className="tabs" role="tablist">
-        {tabs.map(({ id, labelKey }) => (
+        {tabs.map(({ id, labelKey, shortLabelKey }) => (
           <button
             key={id}
             type="button"
             role="tab"
             aria-selected={tab === id}
+            aria-label={t(labelKey)}
             className={tab === id ? 'tab tab--active' : 'tab'}
             onClick={() => setTab(id)}
           >
-            {t(labelKey)}
+            <span className="tab__label tab__label--full">{t(labelKey)}</span>
+            <span className="tab__label tab__label--short">{t(shortLabelKey)}</span>
           </button>
         ))}
         </nav>

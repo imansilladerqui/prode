@@ -7,6 +7,7 @@ import { getStageLabel } from '../lib/stageLabels'
 import { useI18n } from '../i18n/useI18n'
 import type { AdvanceSide, Match, Prediction } from '../types/database'
 import { emptyDraft, type DraftScore } from '../types/draft'
+import { EditPredictionMobileCard } from './EditPredictionMobileCard'
 import { KnockoutAdvancePicker } from './KnockoutAdvancePicker'
 import { TeamFlag } from './TeamFlag'
 
@@ -93,7 +94,44 @@ export const EditPredictionsScreen = ({
           <p className="leaderboard-empty__message">{t('edit.empty')}</p>
         </div>
       ) : (
-        <table className="leaderboard-table edit-predictions-table">
+        <>
+        <div className="edit-predictions-cards" role="list">
+          {visible.map((match) => {
+            const resolved = resolvedById.get(match.id)
+            const teamA = resolved?.resolvedTeamA ?? match.team_a
+            const teamB = resolved?.resolvedTeamB ?? match.team_b
+            const draft = draftScores.get(match.id) ?? emptyDraft()
+            const locked = !canEditPrediction(match.match_date)
+            const isKnockout = match.stage !== 'group'
+            const showPens =
+              isKnockout &&
+              draft.a !== '' &&
+              draft.b !== '' &&
+              isKnockoutDraw(Number(draft.a), Number(draft.b))
+            const label = match.group_name ?? getStageLabel(match.stage, t)
+
+            return (
+              <EditPredictionMobileCard
+                key={match.id}
+                match={match}
+                teamA={teamA}
+                teamB={teamB}
+                draft={draft}
+                locked={locked}
+                showPens={showPens}
+                label={label}
+                isBusy={savingMatchId === match.id || deletingMatchId === match.id}
+                isSaving={savingMatchId === match.id}
+                isDeleting={deletingMatchId === match.id}
+                onDraftChange={onDraftChange}
+                onAdvanceSideChange={onAdvanceSideChange}
+                onSave={onSave}
+                onDelete={onDelete}
+              />
+            )
+          })}
+        </div>
+        <table className="leaderboard-table edit-predictions-table edit-predictions-desktop">
           <thead>
             <tr>
               <th scope="col">{t('admin.colNum')}</th>
@@ -200,7 +238,7 @@ export const EditPredictionsScreen = ({
                           }
                           onClick={() => void onSave(match.id)}
                         >
-                          {savingMatchId === match.id ? t('match.saving') : t('match.save')}
+                          {savingMatchId === match.id ? t('edit.saving') : t('edit.save')}
                         </button>
                       </div>
                     ) : (
@@ -212,6 +250,7 @@ export const EditPredictionsScreen = ({
             })}
           </tbody>
         </table>
+        </>
       )}
     </div>
   )
