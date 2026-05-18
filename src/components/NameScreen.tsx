@@ -1,14 +1,8 @@
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { useI18n } from '../i18n/useI18n'
+import type { NameScreenProps } from '../types'
 
-type Props = {
-  nameInput: string
-  error: string | null
-  onNameChange: (value: string) => void
-  onSubmit: (e: React.FormEvent) => void
-}
-
-export const NameScreen = ({ nameInput, error, onNameChange, onSubmit }: Props) => {
+export const NameScreen = ({ nameInput, error, onNameChange, onSubmit }: NameScreenProps) => {
   const { t } = useI18n()
 
   return (

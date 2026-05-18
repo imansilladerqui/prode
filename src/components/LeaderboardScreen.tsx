@@ -1,59 +1,11 @@
-import { useEffect, useState } from 'react'
-import { Loader } from './Loader'
-import { fetchLeaderboard } from '../lib/api'
-import { useI18n } from '../i18n/useI18n'
-import type { LeaderboardRow } from '../types/database'
+import { useLeaderboard } from '../hooks/useLeaderboard'
+import type { LeaderboardScreenProps } from '../types'
+import { leaderboardMedalForPosition } from '../utils/helpers'
 
-type Props = {
-  playerId: string
-  active: boolean
-}
+export const LeaderboardScreen = ({ playerId, active }: LeaderboardScreenProps) => {
+  const { rows, loading, error, t } = useLeaderboard(active)
 
-const medal = (pos: number): string | null => {
-  if (pos === 1) return '🥇'
-  if (pos === 2) return '🥈'
-  if (pos === 3) return '🥉'
-  return null
-}
-
-export const LeaderboardScreen = ({ playerId, active }: Props) => {
-  const { t, locale } = useI18n()
-  const [rows, setRows] = useState<LeaderboardRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!active) return
-    let cancelled = false
-
-    const load = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const data = await fetchLeaderboard()
-        if (!cancelled) setRows(data)
-      } catch (e) {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : t('ranking.loadError'))
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    void load()
-    return () => {
-      cancelled = true
-    }
-  }, [active, locale, t])
-
-  if (loading) {
-    return (
-      <div className="leaderboard-wrap leaderboard-wrap--loading">
-        <Loader className="loader--on-surface" />
-      </div>
-    )
-  }
+  if (loading) return null
 
   if (error) {
     return (
@@ -106,7 +58,7 @@ export const LeaderboardScreen = ({ playerId, active }: Props) => {
             const isMe = row.user_id === playerId
             return (
               <tr key={row.user_id} className={isMe ? 'leaderboard-row--me' : undefined}>
-                <td>{medal(pos) ?? pos}</td>
+                <td>{leaderboardMedalForPosition(pos) ?? pos}</td>
                 <td>{row.user_name}</td>
                 <td>{row.total_points}</td>
                 <td>{row.exact_hits}</td>

@@ -1,18 +1,5 @@
 import { fifaRankingIndex } from '../data/wc2026-fifa-ranking'
-import type { TeamStanding } from './standings'
-
-export type GroupMatchResult = {
-  homeSlot: string
-  awaySlot: string
-  homeGoals: number
-  awayGoals: number
-}
-
-type MiniStanding = {
-  points: number
-  goalDiff: number
-  goalsFor: number
-}
+import type { GroupMatchResult, MiniStanding, TeamStanding } from '../types'
 
 const emptyMini = (): MiniStanding => ({ points: 0, goalDiff: 0, goalsFor: 0 })
 

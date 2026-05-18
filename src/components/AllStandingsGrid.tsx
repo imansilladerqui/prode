@@ -1,17 +1,9 @@
 import { GROUP_LETTERS } from '../data/wc2026-groups'
-import type { GroupLetter } from '../data/wc2026-groups'
-import type { TournamentState } from '../lib/useTournamentState'
-import type { Match, Prediction } from '../types/database'
 import { countGroupMatchesPredicted } from '../lib/standings'
+import type { AllStandingsGridProps, GroupLetter } from '../types'
 import { GroupStandings } from './GroupStandings'
 
-type Props = {
-  matches: Match[]
-  predictions: Map<string, Prediction>
-  tournament: TournamentState
-}
-
-export const AllStandingsGrid = ({ matches, predictions, tournament }: Props) => (
+export const AllStandingsGrid = ({ matches, predictions, tournament }: AllStandingsGridProps) => (
   <div className="standings-grid">
     {GROUP_LETTERS.map((g: GroupLetter) => {
       const prog = countGroupMatchesPredicted(g, matches, predictions)

@@ -1,34 +1,10 @@
-import { useMemo, useState } from 'react'
-import type { ResolvedMatch } from '../lib/bracketResolver'
 import { isKnockoutDraw } from '../lib/knockoutAdvance'
 import { getStageLabel } from '../lib/stageLabels'
-import { useI18n } from '../i18n/useI18n'
-import type { AdvanceSide, Match, MatchResult } from '../types/database'
-import { emptyDraft, isDraftDraw, type DraftScore } from '../types/draft'
+import { useAdminResults } from '../hooks/useAdminResults'
+import type { AdminResultsScreenProps } from '../types'
+import { emptyDraft } from '../types/draft'
 import { KnockoutAdvancePicker } from './KnockoutAdvancePicker'
 import { TeamFlag } from './TeamFlag'
-
-type Props = {
-  matches: Match[]
-  resolvedMatches: ResolvedMatch[]
-  results: Map<string, MatchResult>
-  savingMatchId: string | null
-  onSaveResult: (
-    matchId: string,
-    scoreA: number,
-    scoreB: number,
-    advanceSide: AdvanceSide | null,
-  ) => Promise<boolean>
-}
-
-const draftFromResult = (result: MatchResult | undefined): DraftScore => {
-  if (!result) return emptyDraft()
-  return {
-    a: String(result.score_a),
-    b: String(result.score_b),
-    advanceSide: result.advance_side,
-  }
-}
 
 export const AdminResultsScreen = ({
   matches,
@@ -36,68 +12,19 @@ export const AdminResultsScreen = ({
   results,
   savingMatchId,
   onSaveResult,
-}: Props) => {
-  const { t } = useI18n()
-  const [filter, setFilter] = useState<'pending' | 'all'>('pending')
-  const [drafts, setDrafts] = useState<Map<string, DraftScore>>(() => {
-    const initial = new Map<string, DraftScore>()
-    for (const m of matches) {
-      initial.set(m.id, draftFromResult(results.get(m.id)))
-    }
-    return initial
-  })
-
-  const resolvedById = useMemo(() => {
-    const map = new Map<string, ResolvedMatch>()
-    for (const r of resolvedMatches) map.set(r.id, r)
-    return map
-  }, [resolvedMatches])
-
-  const visible = useMemo(() => {
-    const sorted = [...matches].sort((a, b) => a.match_number - b.match_number)
-    if (filter === 'all') return sorted
-    return sorted.filter((m) => !results.has(m.id))
-  }, [matches, filter, results])
-
-  const updateDraft = (matchId: string, side: 'a' | 'b', value: string) => {
-    if (value !== '' && !/^\d+$/.test(value)) return
-    setDrafts((prev) => {
-      const next = new Map(prev)
-      const current = next.get(matchId) ?? emptyDraft()
-      const a = side === 'a' ? value : current.a
-      const b = side === 'b' ? value : current.b
-      const updated: DraftScore = { a, b, advanceSide: current.advanceSide }
-      if (!isDraftDraw(updated)) updated.advanceSide = null
-      next.set(matchId, updated)
-      return next
-    })
-  }
-
-  const setAdvance = (matchId: string, side: AdvanceSide) => {
-    setDrafts((prev) => {
-      const next = new Map(prev)
-      const current = next.get(matchId) ?? emptyDraft()
-      next.set(matchId, { ...current, advanceSide: side })
-      return next
-    })
-  }
-
-  const handleSave = async (match: Match) => {
-    const draft = drafts.get(match.id) ?? emptyDraft()
-    if (draft.a === '' || draft.b === '') return
-    const scoreA = Number(draft.a)
-    const scoreB = Number(draft.b)
-    const advanceSide =
-      match.stage !== 'group' && scoreA === scoreB ? draft.advanceSide : null
-    const ok = await onSaveResult(match.id, scoreA, scoreB, advanceSide)
-    if (ok) {
-      setDrafts((prev) => {
-        const next = new Map(prev)
-        next.set(match.id, { a: draft.a, b: draft.b, advanceSide })
-        return next
-      })
-    }
-  }
+}: AdminResultsScreenProps) => {
+  const {
+    filter,
+    setFilter,
+    resolvedById,
+    visible,
+    drafts,
+    updateDraft,
+    setAdvance,
+    handleSave,
+    savingMatchId: savingId,
+    t,
+  } = useAdminResults(matches, resolvedMatches, results, savingMatchId, onSaveResult)
 
   return (
     <section className="admin-results">
@@ -197,12 +124,12 @@ export const AdminResultsScreen = ({
                       disabled={
                         draft.a === '' ||
                         draft.b === '' ||
-                        savingMatchId === match.id ||
+                        savingId === match.id ||
                         (showPens && !draft.advanceSide)
                       }
                       onClick={() => void handleSave(match)}
                     >
-                      {savingMatchId === match.id ? t('admin.saving') : t('admin.save')}
+                      {savingId === match.id ? t('admin.saving') : t('admin.save')}
                     </button>
                   </td>
                 </tr>

@@ -1,6 +1,5 @@
 import { teamFromSlot } from '../data/wc2026-groups'
-import type { Match } from '../types/database'
-import type { SlotMap } from './qualification'
+import type { Match, ResolvedMatch, SlotMap } from '../types'
 
 const resolveSlot = (slot: string, slotMap: SlotMap): string | null => {
   if (slotMap.has(slot)) return slotMap.get(slot) ?? null
@@ -8,12 +7,6 @@ const resolveSlot = (slot: string, slotMap: SlotMap): string | null => {
   if (team) return team
   if (/^W\d+$/.test(slot) || /^L\d+$/.test(slot) || /^3@/.test(slot)) return null
   return null
-}
-
-export type ResolvedMatch = Match & {
-  resolvedTeamA: string
-  resolvedTeamB: string
-  slotsResolved: boolean
 }
 
 export const resolveMatchTeams = (match: Match, slotMap: SlotMap): ResolvedMatch => {

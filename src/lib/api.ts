@@ -1,5 +1,13 @@
 import { supabase } from './supabase'
-import type { AdvanceSide, LeaderboardRow, Match, MatchResult, Prediction, User } from '../types/database'
+import type {
+  AdvanceSide,
+  CommunityPrediction,
+  LeaderboardRow,
+  Match,
+  MatchResult,
+  Prediction,
+  User,
+} from '../types'
 
 export const fetchUser = async (id: string): Promise<User | null> => {
   const { data, error } = await supabase.from('users').select('*').eq('id', id).maybeSingle()
@@ -28,10 +36,10 @@ export const fetchPredictions = async (userId: string): Promise<Prediction[]> =>
   return (data ?? []) as Prediction[]
 }
 
-export const fetchAllPredictions = async (): Promise<Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>[]> => {
+export const fetchAllPredictions = async (): Promise<CommunityPrediction[]> => {
   const { data, error } = await supabase.from('predictions').select('match_id, score_a, score_b')
   if (error) throw error
-  return (data ?? []) as Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>[]
+  return (data ?? []) as CommunityPrediction[]
 }
 
 export const fetchMatchResults = async (): Promise<MatchResult[]> => {

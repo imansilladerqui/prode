@@ -14,19 +14,20 @@ export const WC2026_GROUPS = {
   L: ['Inglaterra', 'Croacia', 'Ghana', 'Panamá'],
 } as const
 
-export type GroupLetter = keyof typeof WC2026_GROUPS
-
-export const GROUP_LETTERS = Object.keys(WC2026_GROUPS) as GroupLetter[]
+export const GROUP_LETTERS = Object.keys(WC2026_GROUPS) as (keyof typeof WC2026_GROUPS)[]
 
 export const teamFromSlot = (slot: string): string | null => {
   const m = /^([A-L])([1-4])$/.exec(slot)
   if (!m) return null
-  const g = m[1] as GroupLetter
+  const g = m[1] as keyof typeof WC2026_GROUPS
   const idx = Number(m[2]) - 1
   return WC2026_GROUPS[g][idx] ?? null
 }
 
-export const slotFromTeam = (group: GroupLetter, teamName: string): string | null => {
+export const slotFromTeam = (
+  group: keyof typeof WC2026_GROUPS,
+  teamName: string,
+): string | null => {
   const teams = WC2026_GROUPS[group] as readonly string[]
   const idx = teams.indexOf(teamName)
   if (idx < 0) return null

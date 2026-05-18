@@ -1,12 +1,9 @@
-import { useMemo, useState } from 'react'
-import type { GroupLetter } from '../data/wc2026-groups'
+import { useState } from 'react'
 import { useMatchQueue } from '../hooks/useMatchQueue'
+import { useMatchesPlayTab } from '../hooks/useMatchesPlayTab'
+import { useMatchesTabs } from '../hooks/useMatchesTabs'
 import { useI18n } from '../i18n/useI18n'
-import { canEditPrediction } from '../lib/matchLock'
-import { countGroupMatchesPredicted } from '../lib/standings'
-import type { TournamentState } from '../lib/useTournamentState'
-import type { AdvanceSide, Match, MatchResult, Prediction } from '../types/database'
-import { emptyDraft, type DraftScore } from '../types/draft'
+import type { MatchesScreenProps, MatchesScreenTab } from '../types'
 import { AllStandingsGrid } from './AllStandingsGrid'
 import { GroupStandings } from './GroupStandings'
 import { LanguageSwitcher } from './LanguageSwitcher'
@@ -15,43 +12,6 @@ import { NavSidebar } from './NavSidebar'
 import { AdminResultsScreen } from './AdminResultsScreen'
 import { EditPredictionsScreen } from './EditPredictionsScreen'
 import { SwipeMatchDeck } from './SwipeMatchDeck'
-type Tab = 'play' | 'edit' | 'standings' | 'ranking' | 'admin'
-
-type Props = {
-  playerId: string
-  userName: string
-  showAdmin: boolean
-  matches: Match[]
-  predictions: Map<string, Prediction>
-  matchResults: Map<string, MatchResult>
-  communityPredictions: Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>[]
-  tournament: TournamentState
-  draftScores: Map<string, DraftScore>
-  error: string | null
-  savingMatchId: string | null
-  deletingMatchId: string | null
-  savingResultMatchId: string | null
-  savedMatchId: string | null
-  onDraftChange: (matchId: string, side: 'a' | 'b', value: string) => void
-  onAdvanceSideChange: (matchId: string, side: AdvanceSide) => void
-  onApplyCommon: (matchId: string, scoreA: number, scoreB: number) => void
-  onSave: (matchId: string) => Promise<boolean>
-  onDelete: (matchId: string) => Promise<boolean>
-  onSaveResult: (
-    matchId: string,
-    scoreA: number,
-    scoreB: number,
-    advanceSide: AdvanceSide | null,
-  ) => Promise<boolean>
-}
-
-const groupFromMatch = (match: Match | undefined): GroupLetter | null => {
-  if (!match?.group_name) return null
-  const letter = match.group_name.replace('Grupo ', '').trim()
-  if (letter.length === 1 && letter >= 'A' && letter <= 'L') return letter as GroupLetter
-  return null
-}
-
 export const MatchesScreen = ({
   playerId,
   userName,
@@ -73,69 +33,31 @@ export const MatchesScreen = ({
   onSave,
   onDelete,
   onSaveResult,
-}: Props) => {
+}: MatchesScreenProps) => {
   const { t } = useI18n()
-  const [tab, setTab] = useState<Tab>('play')
+  const [tab, setTab] = useState<MatchesScreenTab>('play')
   const queue = useMatchQueue(matches, predictions)
-
-  const tabs: {
-    id: Tab
-    labelKey: 'tab.play' | 'tab.edit' | 'tab.standings' | 'tab.ranking' | 'tab.admin'
-    shortLabelKey:
-      | 'tab.playShort'
-      | 'tab.editShort'
-      | 'tab.standingsShort'
-      | 'tab.rankingShort'
-      | 'tab.adminShort'
-  }[] = [
-    { id: 'play', labelKey: 'tab.play', shortLabelKey: 'tab.playShort' },
-    { id: 'edit', labelKey: 'tab.edit', shortLabelKey: 'tab.editShort' },
-    { id: 'standings', labelKey: 'tab.standings', shortLabelKey: 'tab.standingsShort' },
-    { id: 'ranking', labelKey: 'tab.ranking', shortLabelKey: 'tab.rankingShort' },
-    ...(showAdmin
-      ? [{ id: 'admin' as const, labelKey: 'tab.admin' as const, shortLabelKey: 'tab.adminShort' as const }]
-      : []),
-  ]
-
-  const resolvedById = useMemo(() => {
-    const m = new Map<string, (typeof tournament.resolvedMatches)[0]>()
-    for (const r of tournament.resolvedMatches) m.set(r.id, r)
-    return m
-  }, [tournament])
-
-  const currentMatch = queue.currentMatchId ? resolvedById.get(queue.currentMatchId) : null
-  const rawMatch = matches.find((m) => m.id === queue.currentMatchId)
-  const currentGroup = groupFromMatch(rawMatch)
-  const draft = queue.currentMatchId
-    ? (draftScores.get(queue.currentMatchId) ?? emptyDraft())
-    : emptyDraft()
-
-  const activeNavKey =
-    rawMatch?.stage === 'group' && rawMatch.group_name
-      ? rawMatch.group_name
-      : rawMatch?.stage ?? null
-
-  const predictionLocked =
-    rawMatch != null && !canEditPrediction(rawMatch.match_date)
-
-  const handleSaveAndNext = async () => {
-    if (!queue.currentMatchId) return
-    const ok = await onSave(queue.currentMatchId)
-    if (ok) queue.goNext()
-  }
+  const tabs = useMatchesTabs(showAdmin)
+  const play = useMatchesPlayTab(
+    tournament,
+    matches,
+    predictions,
+    draftScores,
+    queue,
+    tab,
+    onSave,
+  )
 
   const liveStandings =
-    currentGroup && tab === 'play' ? (
+    play.liveStandings ? (
       <section className="live-standings" aria-live="polite" aria-atomic="true">
-        <h2 className="live-standings__title">
-          {t('live.title', { group: currentGroup })}
-        </h2>
+        <h2 className="live-standings__title">{play.liveStandingsTitle}</h2>
         <GroupStandings
-          group={currentGroup}
-          standings={tournament.standingsByGroup[currentGroup]}
-          topThirds={tournament.topThirds}
-          done={countGroupMatchesPredicted(currentGroup, matches, predictions).done}
-          total={countGroupMatchesPredicted(currentGroup, matches, predictions).total}
+          group={play.liveStandings.group}
+          standings={play.liveStandings.standings}
+          topThirds={play.liveStandings.topThirds}
+          done={play.liveStandings.done}
+          total={play.liveStandings.total}
         />
       </section>
     ) : null
@@ -160,18 +82,18 @@ export const MatchesScreen = ({
       </header>
 
         <nav className="tabs" role="tablist">
-        {tabs.map(({ id, labelKey, shortLabelKey }) => (
+        {tabs.map(({ id, label, shortLabel, ariaLabel }) => (
           <button
             key={id}
             type="button"
             role="tab"
             aria-selected={tab === id}
-            aria-label={t(labelKey)}
+            aria-label={ariaLabel}
             className={tab === id ? 'tab tab--active' : 'tab'}
             onClick={() => setTab(id)}
           >
-            <span className="tab__label tab__label--full">{t(labelKey)}</span>
-            <span className="tab__label tab__label--short">{t(shortLabelKey)}</span>
+            <span className="tab__label tab__label--full">{label}</span>
+            <span className="tab__label tab__label--short">{shortLabel}</span>
           </button>
         ))}
         </nav>
@@ -187,7 +109,7 @@ export const MatchesScreen = ({
                 variant="desktop"
                 matches={matches}
                 predictions={predictions}
-                activeKey={activeNavKey}
+                activeKey={play.activeNavKey}
                 onJump={queue.jumpToStageOrGroup}
               />
             </div>
@@ -196,22 +118,22 @@ export const MatchesScreen = ({
                 variant="mobile"
                 matches={matches}
                 predictions={predictions}
-                activeKey={activeNavKey}
+                activeKey={play.activeNavKey}
                 onJump={queue.jumpToStageOrGroup}
               />
               <SwipeMatchDeck
-                match={currentMatch ?? null}
+                match={play.currentMatch ?? null}
                 matchIndex={queue.currentIndex}
                 totalMatches={queue.total}
-                draftA={draft.a}
-                draftB={draft.b}
-                advanceSide={draft.advanceSide}
+                draftA={play.draft.a}
+                draftB={play.draft.b}
+                advanceSide={play.draft.advanceSide}
                 communityPredictions={communityPredictions}
                 isSaving={savingMatchId === queue.currentMatchId}
                 justSaved={savedMatchId === queue.currentMatchId}
                 canGoPrev={queue.currentIndex > 0}
                 canGoNext={queue.currentIndex < queue.total - 1}
-                predictionLocked={predictionLocked}
+                predictionLocked={play.predictionLocked}
                 onDraftChange={(side, v) =>
                   queue.currentMatchId && onDraftChange(queue.currentMatchId, side, v)
                 }
@@ -221,11 +143,11 @@ export const MatchesScreen = ({
                 onApplyCommon={(a, b) =>
                   queue.currentMatchId && onApplyCommon(queue.currentMatchId, a, b)
                 }
-                onSaveAndNext={() => void handleSaveAndNext()}
+                onSaveAndNext={() => void play.handleSaveAndNext()}
                 onPrev={queue.goPrev}
                 onNext={queue.goNext}
               />
-              {currentMatch && currentMatch.stage !== 'group' && (
+              {play.currentMatch && play.currentMatch.stage !== 'group' && (
                 <p className="knockout-hint muted">{t('match.knockoutHint')}</p>
               )}
               <div className="live-standings--mobile">{liveStandings}</div>

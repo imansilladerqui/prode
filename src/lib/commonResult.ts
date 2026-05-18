@@ -1,6 +1,4 @@
-import type { Prediction } from '../types/database'
-
-export type CommunityPrediction = Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>
+import type { CommunityPrediction, CommonPredictionResult } from '../types'
 
 export const removeFromCommunityPredictions = (
   all: CommunityPrediction[],
@@ -31,13 +29,6 @@ export const replaceInCommunityPredictions = (
       ? removeFromCommunityPredictions(all, matchId, previous.score_a, previous.score_b)
       : all
   return [...withoutPrevious, { match_id: matchId, score_a: scoreA, score_b: scoreB }]
-}
-
-export type CommonPredictionResult = {
-  scoreA: number
-  scoreB: number
-  count: number
-  source: 'community'
 }
 
 export const getMostCommonPrediction = (

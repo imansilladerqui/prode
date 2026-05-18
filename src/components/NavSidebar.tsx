@@ -1,16 +1,7 @@
-import { useMemo } from 'react'
 import { GROUP_LETTERS } from '../data/wc2026-groups'
-import { useI18n } from '../i18n/useI18n'
 import { getStageLabel } from '../lib/stageLabels'
-import type { Match, MatchStage, Prediction } from '../types/database'
-
-type Props = {
-  matches: Match[]
-  predictions: Map<string, Prediction>
-  activeKey: string | null
-  onJump: (key: string) => void
-  variant?: 'desktop' | 'mobile' | 'both'
-}
+import { useNavPendingCounts } from '../hooks/useNavPendingCounts'
+import type { MatchStage, NavSidebarProps } from '../types'
 
 export const NavSidebar = ({
   matches,
@@ -18,10 +9,10 @@ export const NavSidebar = ({
   activeKey,
   onJump,
   variant = 'both',
-}: Props) => {
+}: NavSidebarProps) => {
   const showDesktop = variant === 'desktop' || variant === 'both'
   const showMobile = variant === 'mobile' || variant === 'both'
-  const { t } = useI18n()
+  const { pendingByKey, t } = useNavPendingCounts(matches, predictions)
 
   const knockoutNav: { key: MatchStage; short?: boolean }[] = [
     { key: 'r32' },
@@ -31,16 +22,6 @@ export const NavSidebar = ({
     { key: 'third', short: true },
     { key: 'final' },
   ]
-
-  const pendingByKey = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const m of matches) {
-      if (predictions.has(m.id)) continue
-      const key = m.stage === 'group' && m.group_name ? m.group_name : m.stage
-      counts.set(key, (counts.get(key) ?? 0) + 1)
-    }
-    return counts
-  }, [matches, predictions])
 
   const renderItem = (key: string, label: string) => {
     const pending = pendingByKey.get(key) ?? 0

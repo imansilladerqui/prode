@@ -1,15 +1,6 @@
-import type { AdvanceSide } from '../types/database'
 import { useI18n } from '../i18n/useI18n'
+import type { KnockoutAdvancePickerProps } from '../types'
 import { TeamFlag } from './TeamFlag'
-
-type Props = {
-  teamA: string
-  teamB: string
-  selected: AdvanceSide | null
-  disabled?: boolean
-  compact?: boolean
-  onSelect: (side: AdvanceSide) => void
-}
 
 export const KnockoutAdvancePicker = ({
   teamA,
@@ -18,7 +9,7 @@ export const KnockoutAdvancePicker = ({
   disabled,
   compact,
   onSelect,
-}: Props) => {
+}: KnockoutAdvancePickerProps) => {
   const { t } = useI18n()
 
   return (

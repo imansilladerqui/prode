@@ -1,12 +1,8 @@
 import { getTeamFlagCode, teamFlagSrc } from '../lib/teamFlag'
 
-type Props = {
-  teamName: string
-  flagSize?: number
-  className?: string
-}
+import type { TeamFlagProps } from '../types'
 
-export const TeamFlag = ({ teamName, flagSize = 20, className }: Props) => {
+export const TeamFlag = ({ teamName, flagSize = 20, className }: TeamFlagProps) => {
   const code = getTeamFlagCode(teamName)
 
   return (

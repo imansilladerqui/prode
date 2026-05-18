@@ -1,4 +1,4 @@
-export type Outcome = 'A' | 'B' | 'draw'
+import type { Outcome } from '../types'
 
 export const getOutcome = (a: number, b: number): Outcome =>
   a > b ? 'A' : b > a ? 'B' : 'draw'

@@ -3,26 +3,9 @@ import { formatMatchDay, formatMatchTime } from '../lib/formatMatchDate'
 import { getStageLabel } from '../lib/stageLabels'
 import { useI18n } from '../i18n/useI18n'
 import { isKnockoutDraw } from '../lib/knockoutAdvance'
-import type { ResolvedMatch } from '../lib/bracketResolver'
-import type { AdvanceSide } from '../types/database'
+import type { MatchHeroCardProps } from '../types'
 import { KnockoutAdvancePicker } from './KnockoutAdvancePicker'
 import { TeamFlag } from './TeamFlag'
-
-type Props = {
-  match: ResolvedMatch
-  matchIndex: number
-  totalMatches: number
-  draftA: string
-  draftB: string
-  advanceSide: AdvanceSide | null
-  communityPredictions: Pick<import('../types/database').Prediction, 'match_id' | 'score_a' | 'score_b'>[]
-  isSaving: boolean
-  justSaved: boolean
-  predictionLocked: boolean
-  onDraftChange: (side: 'a' | 'b', value: string) => void
-  onAdvanceSideSelect: (side: AdvanceSide) => void
-  onApplyCommon: (scoreA: number, scoreB: number) => void
-}
 
 export const MatchHeroCard = ({
   match,
@@ -38,7 +21,7 @@ export const MatchHeroCard = ({
   onDraftChange,
   onAdvanceSideSelect,
   onApplyCommon,
-}: Props) => {
+}: MatchHeroCardProps) => {
   const { t, intlLocaleTag } = useI18n()
   const common = getMostCommonPrediction(communityPredictions, match.id)
   const locked = predictionLocked

@@ -1,5 +1,4 @@
-import type { MessageKey } from '../i18n/translations'
-import type { MatchStage } from '../types/database'
+import type { MatchStage, MessageKey } from '../types'
 
 const STAGE_KEYS: Record<MatchStage, MessageKey> = {
   group: 'stage.group',

@@ -4,7 +4,7 @@ import {
   getKnockoutValidationError,
   getKnockoutWinner,
 } from './knockoutAdvance'
-import type { Match, Prediction } from '../types/database'
+import type { Match, Prediction } from '../types'
 
 const koMatch = (overrides: Partial<Match> = {}): Match => ({
   id: 'm1',

@@ -1,30 +1,13 @@
-import { useMemo, useState } from 'react'
-import type { ResolvedMatch } from '../lib/bracketResolver'
 import { formatMatchDate } from '../lib/formatMatchDate'
 import { canEditPrediction } from '../lib/matchLock'
 import { isKnockoutDraw } from '../lib/knockoutAdvance'
 import { getStageLabel } from '../lib/stageLabels'
-import { useI18n } from '../i18n/useI18n'
-import type { AdvanceSide, Match, Prediction } from '../types/database'
-import { emptyDraft, type DraftScore } from '../types/draft'
+import { useEditPredictionsList } from '../hooks/useEditPredictionsList'
+import type { EditPredictionsScreenProps } from '../types'
+import { emptyDraft } from '../types/draft'
 import { EditPredictionMobileCard } from './EditPredictionMobileCard'
 import { KnockoutAdvancePicker } from './KnockoutAdvancePicker'
 import { TeamFlag } from './TeamFlag'
-
-type Filter = 'editable' | 'closed'
-
-type Props = {
-  matches: Match[]
-  resolvedMatches: ResolvedMatch[]
-  predictions: Map<string, Prediction>
-  draftScores: Map<string, DraftScore>
-  savingMatchId: string | null
-  deletingMatchId: string | null
-  onDraftChange: (matchId: string, side: 'a' | 'b', value: string) => void
-  onAdvanceSideChange: (matchId: string, side: AdvanceSide) => void
-  onSave: (matchId: string) => Promise<boolean>
-  onDelete: (matchId: string) => Promise<boolean>
-}
 
 export const EditPredictionsScreen = ({
   matches,
@@ -37,30 +20,12 @@ export const EditPredictionsScreen = ({
   onAdvanceSideChange,
   onSave,
   onDelete,
-}: Props) => {
-  const { t, intlLocaleTag } = useI18n()
-  const [filter, setFilter] = useState<Filter>('editable')
-
-  const resolvedById = useMemo(() => {
-    const map = new Map<string, ResolvedMatch>()
-    for (const r of resolvedMatches) map.set(r.id, r)
-    return map
-  }, [resolvedMatches])
-
-  const savedMatches = useMemo(
-    () =>
-      [...matches]
-        .filter((m) => predictions.has(m.id))
-        .sort((a, b) => a.match_number - b.match_number),
-    [matches, predictions],
+}: EditPredictionsScreenProps) => {
+  const { filter, setFilter, resolvedById, visible, t, intlLocaleTag } = useEditPredictionsList(
+    matches,
+    resolvedMatches,
+    predictions,
   )
-
-  const visible = useMemo(() => {
-    if (filter === 'closed') {
-      return savedMatches.filter((m) => !canEditPrediction(m.match_date))
-    }
-    return savedMatches.filter((m) => canEditPrediction(m.match_date))
-  }, [savedMatches, filter])
 
   return (
     <div className="leaderboard-wrap edit-predictions">

@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fifaRankingIndex } from '../data/wc2026-fifa-ranking'
-import {
-  compareThirdPlaceFifa,
-  rankGroupStandings,
-  type GroupMatchResult,
-} from './standingsRank'
-import type { TeamStanding } from './standings'
+import { compareThirdPlaceFifa, rankGroupStandings } from './standingsRank'
+import type { GroupMatchResult, TeamStanding } from '../types'
 
 const standing = (
   slot: string,

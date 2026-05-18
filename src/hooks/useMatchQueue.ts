@@ -1,16 +1,10 @@
 import { useCallback, useMemo, useState } from 'react'
-import type { Match, Prediction } from '../types/database'
-
-const buildOrderedIds = (matches: Match[], predictions: Map<string, Prediction>): string[] => {
-  const sorted = [...matches].sort((a, b) => a.match_number - b.match_number)
-  const pending = sorted.filter((m) => !predictions.has(m.id))
-  const done = sorted.filter((m) => predictions.has(m.id))
-  return [...pending, ...done].map((m) => m.id)
-}
+import type { Match, Prediction } from '../types'
+import { buildOrderedMatchIds } from '../utils/helpers'
 
 export const useMatchQueue = (matches: Match[], predictions: Map<string, Prediction>) => {
   const orderedIds = useMemo(
-    () => buildOrderedIds(matches, predictions),
+    () => buildOrderedMatchIds(matches, predictions),
     [matches, predictions],
   )
 

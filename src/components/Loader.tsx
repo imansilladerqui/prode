@@ -1,27 +1,22 @@
-import { lazy, Suspense } from 'react'
+import { useLottie } from 'lottie-react'
+import loaderAnimation from '../assets/wc2026-loader.lottie.json'
+import type { LoaderProps } from '../types'
 
-const LOGO_SRC = `${import.meta.env.BASE_URL}wc2026-loader.png`
-
-const LoaderLottie = lazy(() =>
-  import('./LoaderLottie').then((m) => ({ default: m.LoaderLottie })),
-)
-
-type Props = {
-  className?: string
-}
-
-export const Loader = ({ className }: Props) => {
+export const Loader = ({ className }: LoaderProps) => {
   const rootClass = className ? `loader ${className}` : 'loader'
+  const { View } = useLottie({
+    animationData: loaderAnimation,
+    loop: true,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid meet',
+    },
+  })
 
   return (
     <div className={rootClass} role="status" aria-live="polite" aria-label="Loading">
-      <Suspense
-        fallback={
-          <img className="loader__lottie loader__lottie--static" src={LOGO_SRC} alt="" decoding="async" />
-        }
-      >
-        <LoaderLottie />
-      </Suspense>
+      <div className="loader__lottie" aria-hidden>
+        {View}
+      </div>
     </div>
   )
 }

@@ -20,24 +20,28 @@ import { isAdmin } from './lib/admin'
 import { canEditPrediction } from './lib/matchLock'
 import { getKnockoutValidationError } from './lib/knockoutAdvance'
 import { getOrCreatePlayerId, isNameLocked, setNameLocked } from './lib/playerId'
-import { useTournamentState } from './lib/useTournamentState'
-import type { AdvanceSide, Match, MatchResult, Prediction } from './types/database'
-import { emptyDraft, isDraftDraw, type DraftScore } from './types/draft'
+import { useTournamentState } from './hooks/useTournamentState'
+import type {
+  AdvanceSide,
+  AppScreen,
+  CommunityPrediction,
+  DraftScore,
+  Match,
+  MatchResult,
+  Prediction,
+} from './types'
+import { emptyDraft, isDraftDraw } from './types/draft'
 import './App.css'
-
-type Screen = 'loading' | 'name' | 'matches'
 
 const AppContent = () => {
   const { t } = useI18n()
   const playerId = getOrCreatePlayerId()
-  const [screen, setScreen] = useState<Screen>('loading')
+  const [screen, setScreen] = useState<AppScreen>('loading')
   const [userName, setUserName] = useState('')
   const [nameInput, setNameInput] = useState('')
   const [matches, setMatches] = useState<Match[]>([])
   const [predictions, setPredictions] = useState<Map<string, Prediction>>(new Map())
-  const [communityPredictions, setCommunityPredictions] = useState<
-    Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>[]
-  >([])
+  const [communityPredictions, setCommunityPredictions] = useState<CommunityPrediction[]>([])
   const [draftScores, setDraftScores] = useState<Map<string, DraftScore>>(new Map())
   const [error, setError] = useState<string | null>(null)
   const [matchResults, setMatchResults] = useState<Map<string, MatchResult>>(new Map())
@@ -57,7 +61,7 @@ const AppContent = () => {
   const applyPredictionsToState = (
     matchList: Match[],
     predictionList: Prediction[],
-    allPreds: Pick<Prediction, 'match_id' | 'score_a' | 'score_b'>[],
+    allPreds: CommunityPrediction[],
   ) => {
     setCommunityPredictions(allPreds)
     const predMap = new Map(predictionList.map((p) => [p.match_id, p]))

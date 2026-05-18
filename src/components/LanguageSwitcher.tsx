@@ -1,5 +1,5 @@
 import { useI18n } from '../i18n/useI18n'
-import type { Locale } from '../i18n/translations'
+import type { Locale } from '../types'
 
 export const LanguageSwitcher = () => {
   const { locale, setLocale, t } = useI18n()

@@ -1,11 +1,4 @@
-import type { AdvanceSide, Match, Prediction } from '../types/database'
-
-export type KnockoutWinner = {
-  slot: string
-  team: string
-}
-
-export type KnockoutValidationError = 'error.negativeGoals' | 'error.knockoutAdvanceRequired'
+import type { AdvanceSide, KnockoutValidationError, KnockoutWinner, Match, Prediction } from '../types'
 
 export const winnerSlotForMatch = (matchNumber: number): string => `W${matchNumber}`
 

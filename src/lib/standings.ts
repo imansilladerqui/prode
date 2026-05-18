@@ -1,20 +1,7 @@
-import type { GroupLetter } from '../data/wc2026-groups'
 import { GROUP_LETTERS, WC2026_GROUPS } from '../data/wc2026-groups'
-import type { Match, Prediction } from '../types/database'
-import { type GroupMatchResult, rankGroupStandings } from './standingsRank'
-
-export type TeamStanding = {
-  slot: string
-  team: string
-  played: number
-  won: number
-  drawn: number
-  lost: number
-  goalsFor: number
-  goalsAgainst: number
-  goalDiff: number
-  points: number
-}
+import type { GroupLetter, GroupMatchResult, TeamStanding } from '../types'
+import type { Match, Prediction } from '../types'
+import { rankGroupStandings } from './standingsRank'
 
 const emptyStanding = (group: GroupLetter, index: number): TeamStanding => ({
   slot: `${group}${index + 1}`,

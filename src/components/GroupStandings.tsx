@@ -1,19 +1,9 @@
-import type { GroupLetter } from '../data/wc2026-groups'
 import { useI18n } from '../i18n/useI18n'
-import type { TeamStanding } from '../lib/standings'
-import type { ThirdPlaceEntry } from '../lib/thirdPlace'
-import { isThirdInTopEight } from '../lib/useTournamentState'
+import { isThirdInTopEight } from '../lib/tournamentState'
+import type { GroupStandingsProps } from '../types'
 import { TeamFlag } from './TeamFlag'
 
-type Props = {
-  group: GroupLetter
-  standings: TeamStanding[]
-  topThirds: ThirdPlaceEntry[]
-  done: number
-  total: number
-}
-
-export const GroupStandings = ({ group, standings, topThirds, done, total }: Props) => {
+export const GroupStandings = ({ group, standings, topThirds, done, total }: GroupStandingsProps) => {
   const { t } = useI18n()
 
   return (

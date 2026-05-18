@@ -74,10 +74,6 @@
   animation: loader-breathe 2.4s ease-in-out infinite;
 }
 
-.loader--on-surface .loader__lottie {
-  filter: drop-shadow(0 12px 28px rgb(0 0 0 / 0.18));
-}
-
 @keyframes loader-breathe {
   0%,
   100% {
@@ -1151,14 +1147,6 @@
   background: var(--qualify-direct);
   font-weight: 500;
   color: var(--wc-blue);
-}
-
-.leaderboard-wrap--loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 14rem;
-  padding: 2rem 1rem;
 }
 
 .leaderboard-empty__message {

@@ -1,4 +1,5 @@
-import { LOCALE_STORAGE_KEY, type Locale } from './translations'
+import { LOCALE_STORAGE_KEY } from './translations'
+import type { Locale } from '../types'
 
 export const getStoredLocale = (): Locale => {
   const raw = localStorage.getItem(LOCALE_STORAGE_KEY)

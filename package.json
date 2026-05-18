@@ -9,17 +9,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
-    "audit:ci": "pnpm audit --audit-level=high",
-    "seed:sql": "tsx supabase/seed/generate-sql.ts",
-    "seed:full-schema": "tsx supabase/seed/generate-full-schema.ts",
-    "flags:copy": "tsx scripts/copy-flags.ts",
-    "lottie:loader": "tsx scripts/generate-loader-lottie.ts",
-    "favicon:generate": "tsx scripts/generate-favicon.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
-    "country-flag-icons": "^1.6.17",
     "lottie-react": "^2.4.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
@@ -34,7 +27,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
-    "tsx": "^4.19.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12",

@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { I18nContext } from './context'
 import { getStoredLocale, intlLocale, setStoredLocale } from './locale'
-import { interpolate, translations, type Locale, type MessageKey } from './translations'
+import type { Locale, MessageKey } from '../types'
+import { interpolate, translations } from './translations'
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [locale, setLocaleState] = useState<Locale>(getStoredLocale)

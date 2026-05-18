@@ -1,16 +1,14 @@
-import type { AdvanceSide } from '../types/database'
 import { useI18n } from '../i18n/useI18n'
+import type { KnockoutAdvanceDialogProps } from '../types'
 import { TeamFlag } from './TeamFlag'
 
-type Props = {
-  open: boolean
-  teamA: string
-  teamB: string
-  onPick: (side: AdvanceSide) => void
-  onCancel: () => void
-}
-
-export const KnockoutAdvanceDialog = ({ open, teamA, teamB, onPick, onCancel }: Props) => {
+export const KnockoutAdvanceDialog = ({
+  open,
+  teamA,
+  teamB,
+  onPick,
+  onCancel,
+}: KnockoutAdvanceDialogProps) => {
   const { t } = useI18n()
 
   if (!open) return null

@@ -1,28 +1,6 @@
-import type { ResolvedMatch } from '../lib/bracketResolver'
 import { useI18n } from '../i18n/useI18n'
-import type { AdvanceSide } from '../types/database'
+import type { SwipeMatchDeckProps } from '../types'
 import { MatchHeroCard } from './MatchHeroCard'
-
-type Props = {
-  match: ResolvedMatch | null
-  matchIndex: number
-  totalMatches: number
-  draftA: string
-  draftB: string
-  advanceSide: AdvanceSide | null
-  communityPredictions: Pick<import('../types/database').Prediction, 'match_id' | 'score_a' | 'score_b'>[]
-  isSaving: boolean
-  justSaved: boolean
-  canGoPrev: boolean
-  canGoNext: boolean
-  predictionLocked: boolean
-  onDraftChange: (side: 'a' | 'b', value: string) => void
-  onAdvanceSideSelect: (side: AdvanceSide) => void
-  onApplyCommon: (scoreA: number, scoreB: number) => void
-  onSaveAndNext: () => void
-  onPrev: () => void
-  onNext: () => void
-}
 
 export const SwipeMatchDeck = ({
   match,
@@ -43,7 +21,7 @@ export const SwipeMatchDeck = ({
   onSaveAndNext,
   onPrev,
   onNext,
-}: Props) => {
+}: SwipeMatchDeckProps) => {
   const { t } = useI18n()
   const canSave = draftA !== '' && draftB !== ''
 

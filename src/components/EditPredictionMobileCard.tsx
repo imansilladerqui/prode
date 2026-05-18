@@ -1,26 +1,8 @@
 import { formatMatchDay, formatMatchTime } from '../lib/formatMatchDate'
 import { useI18n } from '../i18n/useI18n'
-import type { AdvanceSide, Match } from '../types/database'
-import type { DraftScore } from '../types/draft'
+import type { EditPredictionMobileCardProps } from '../types'
 import { KnockoutAdvancePicker } from './KnockoutAdvancePicker'
 import { TeamFlag } from './TeamFlag'
-
-type Props = {
-  match: Match
-  teamA: string
-  teamB: string
-  draft: DraftScore
-  locked: boolean
-  showPens: boolean
-  label: string
-  isBusy: boolean
-  isSaving: boolean
-  isDeleting: boolean
-  onDraftChange: (matchId: string, side: 'a' | 'b', value: string) => void
-  onAdvanceSideChange: (matchId: string, side: AdvanceSide) => void
-  onSave: (matchId: string) => Promise<boolean>
-  onDelete: (matchId: string) => Promise<boolean>
-}
 
 export const EditPredictionMobileCard = ({
   match,
@@ -37,7 +19,7 @@ export const EditPredictionMobileCard = ({
   onAdvanceSideChange,
   onSave,
   onDelete,
-}: Props) => {
+}: EditPredictionMobileCardProps) => {
   const { t, intlLocaleTag } = useI18n()
 
   return (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { computeTournamentState } from './useTournamentState'
-import type { Match, Prediction } from '../types/database'
+import { computeTournamentState } from './tournamentState'
+import type { Match, Prediction } from '../types'
 
 const groupMatch = (id: string, n: number, group: string): Match => ({
   id,

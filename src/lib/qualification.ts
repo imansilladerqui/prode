@@ -1,10 +1,7 @@
-import type { GroupLetter } from '../data/wc2026-groups'
 import { GROUP_LETTERS } from '../data/wc2026-groups'
+import type { GroupLetter, SlotMap } from '../types'
 import { THIRD_PLACE_CANDIDATES, THIRD_PLACE_MATCH_ORDER } from '../data/third-place-slots'
-import type { ThirdPlaceEntry } from './thirdPlace'
-import type { TeamStanding } from './standings'
-
-export type SlotMap = Map<string, string>
+import type { TeamStanding, ThirdPlaceEntry } from '../types'
 
 /** Map each 3@ match to a qualified third-placed group (FIFA Annex C candidate pools). */
 const assignThirdPlaceMatches = (topThirds: ThirdPlaceEntry[]): Map<number, GroupLetter> => {
